@@ -3,200 +3,465 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f3d5e">
+<meta name="theme-color" content="#EEF2F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1420" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Modem KNTT – Sao chép cấu hình</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<title>Modem Minh Sáng</title>
 <style>
-:root{--bg:#f3f5f8;--card:#fff;--ink:#17202a;--mute:#5d6b78;--pri:#0f6cbd;--pri2:#0f3d5e;--ok:#1a7f37;--err:#c62828;--line:#dde3ea;--old:#8a5a00;--new:#0b6b3a}
+:root{
+  --bg:#EEF2F4; --surface:#FFFFFF; --surface-2:#F5F8F9;
+  --text:#0F2030; --text-2:#5B6B77; --border:#DCE3E7;
+  --accent:#B8860B; --accent-ink:#FFFFFF;
+  --old:#B8860B; --new:#2E7D4F; --err:#C1440E; --done:#2E7D4F; --info:#2B6CB0;
+  --term-bg:#0F2030; --term-ink:#D6E2EA;
+  --shadow:0 1px 2px rgba(15,32,48,.06),0 6px 16px rgba(15,32,48,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0B1420; --surface:#16273B; --surface-2:#1D3049;
+    --text:#EDF1F5; --text-2:#9FB0BF; --border:rgba(255,255,255,.10);
+    --accent:#F2B705; --accent-ink:#0B1420;
+    --old:#F2B705; --new:#4CC382; --err:#FF6A3D; --done:#4CC382; --info:#6CB2FF;
+    --term-bg:#07101A; --term-ink:#D6E2EA;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 24px rgba(0,0,0,.35);
+  }
+}
 *{box-sizing:border-box}
-html,body{margin:0}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;padding-bottom:70px}
-header{background:var(--pri2);color:#fff;padding:12px 14px;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
-header h1{font-size:16px;margin:0;flex:1;line-height:1.25}
-header small{display:block;font-weight:400;opacity:.75;font-size:12px}
-header button{padding:7px 10px;font-size:13px;background:#ffffff22;color:#fff;border-color:#ffffff44}
-.dot{width:12px;height:12px;border-radius:50%;background:#9aa5b1;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.15)}
-.dot.on{background:#3ddc84}
-main{padding:12px;max-width:720px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
-.card h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.04em;color:var(--pri2);display:flex;align-items:center;gap:8px}
-.badge{font-size:11px;padding:2px 8px;border-radius:20px;color:#fff;letter-spacing:0}
-.badge.old{background:var(--old)}.badge.new{background:var(--new)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row>*{flex:1 1 auto}
-label{font-size:12px;color:var(--mute);display:block;margin:8px 0 4px}
-input,select{width:100%;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
-button{font-size:15px;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600;cursor:pointer}
-button.pri{background:var(--pri);border-color:var(--pri);color:#fff}
-button.okb{background:var(--new);border-color:var(--new);color:#fff}
-button.oldb{background:var(--old);border-color:var(--old);color:#fff}
-button.big{width:100%;padding:14px;font-size:16px}
-button.sm{padding:7px 10px;font-size:13px;flex:0 0 auto}
-button:disabled{opacity:.45}
-.qbtn{flex:1 1 22%;min-width:70px}
-#term{background:#0d1117;color:#c9d1d9;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;height:300px;overflow:auto;border-radius:8px;padding:8px;white-space:pre-wrap;word-break:break-all}
-#term .tx{color:#79c0ff}#term .sys{color:#d29922}#term .er{color:#ff7b72}
-.steps{list-style:none;margin:8px 0 0;padding:0}
-.steps li{padding:5px 0 5px 26px;position:relative;color:var(--mute);font-size:14px}
-.steps li:before{content:"";position:absolute;left:4px;top:8px;width:12px;height:12px;border-radius:50%;border:2px solid #b8c2cc}
-.steps li.run{color:var(--ink);font-weight:600}.steps li.run:before{border-color:var(--pri);border-top-color:transparent;animation:sp .8s linear infinite}
-.steps li.ok{color:var(--ok)}.steps li.ok:before{background:var(--ok);border-color:var(--ok)}
-.steps li.bad{color:var(--err)}.steps li.bad:before{background:var(--err);border-color:var(--err)}
-@keyframes sp{to{transform:rotate(360deg)}}
-table.cfg{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
-table.cfg th,table.cfg td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top;word-break:break-all}
-table.cfg th{color:var(--mute);font-weight:500;width:32%}
-table.cfg td.y{color:var(--ok);font-weight:600}table.cfg td.n{color:var(--err);font-weight:600}
-.empty{color:var(--mute);font-size:14px;padding:6px 0}
-.note{font-size:13px;color:var(--mute);line-height:1.45}
-.warn{background:#fff6e5;border:1px solid #f3d29b;color:#7a4b00;border-radius:8px;padding:10px;font-size:13px;line-height:1.45;margin-bottom:12px}
-.done{background:#e8f6ed;border:1px solid #9fd5b1;color:#0b5a2c;border-radius:8px;padding:10px;font-weight:600;margin-top:10px}
-.fail{background:#fdecec;border:1px solid #f2b8b5;color:#8c1d18;border-radius:8px;padding:10px;font-weight:600;margin-top:10px}
-.hint{font-size:12px;color:var(--mute);margin-top:4px;line-height:1.4}
-details summary{cursor:pointer;font-weight:600;color:var(--pri2)}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:6;padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;border-radius:0;background:none;padding:9px 2px 8px;font-size:12px;font-weight:600;color:var(--mute)}
-nav button span{display:block;font-size:20px;line-height:1.1}
-nav button.act{color:var(--pri)}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Be Vietnam Pro",-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-top:env(safe-area-inset-top,0px);-webkit-tap-highlight-color:transparent;font-size:15px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+button,input,select{font-family:inherit}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+
+/* ===== Header ===== */
+header{padding:16px 18px 14px;border-bottom:1px solid var(--border);position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+.head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.eyebrow{font-size:12px;color:var(--text-2);letter-spacing:.02em}
+header h1{margin:2px 0 0;font-size:20px;font-weight:700;line-height:1.25}
+header h1 span{color:var(--accent)}
+.round-btn{flex:0 0 auto;width:34px;height:34px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.round-btn svg{width:18px;height:18px}
+.pill-btn{padding:6px 11px;border-radius:100px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;margin-right:8px}
+
+/* thanh trạng thái kết nối */
+.conn{display:flex;align-items:center;gap:10px;margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px 8px 8px 12px}
+.conn .led{width:10px;height:10px;border-radius:50%;background:var(--text-2);opacity:.5;flex:0 0 auto}
+.conn.on .led{background:var(--done);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--done) 22%,transparent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--done) 8%,transparent)}}
+.conn .ct{flex:1;min-width:0}
+.conn .ct b{display:block;font-size:13.5px}
+.conn .ct small{display:block;font-size:11.5px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conn button{flex:0 0 auto;padding:8px 13px;border-radius:9px;border:none;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:700;cursor:pointer}
+.conn.on button{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+.conn button:disabled{opacity:.45}
+
+/* ===== Main / views ===== */
+main{flex:1;padding:16px 18px calc(96px + env(safe-area-inset-bottom,0px))}
+.view{display:none}.view.active{display:block;animation:fadeUp .25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}}
+.sec-title{font-size:12px;font-weight:700;color:var(--text-2);letter-spacing:.06em;text-transform:uppercase;margin:4px 2px 10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 15px;margin-bottom:14px;box-shadow:var(--shadow)}
+.notice{display:none;font-size:13px;line-height:1.5;color:var(--text);background:color-mix(in srgb,var(--err) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--err) 35%,transparent);border-radius:12px;padding:11px 13px;margin-bottom:14px}
+.notice.show{display:block}
+
+/* bước */
+.step-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.step-no{width:28px;height:28px;border-radius:100px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex:0 0 auto}
+.step-no.old{background:var(--old);color:var(--accent-ink)}.step-no.new{background:var(--new);color:#fff}
+.step-head h3{margin:0;font-size:15.5px;font-weight:700}
+.step-head small{display:block;font-size:12px;color:var(--text-2);font-weight:500;margin-top:1px}
+.step-head .done-tag{margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;background:color-mix(in srgb,var(--done) 18%,transparent);color:var(--done)}
+.desc{font-size:13px;color:var(--text-2);line-height:1.55;margin:0 0 12px}
+
+.btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:var(--accent-ink);font-size:15.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn svg{width:18px;height:18px}
+.btn.new{background:var(--new);color:#fff}
+.btn.ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--border);font-weight:600}
+.btn.sm{padding:10px 12px;font-size:13.5px;border-radius:10px}
+.btn.danger{background:transparent;border:1px solid color-mix(in srgb,var(--err) 50%,transparent);color:var(--err)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-row{display:flex;gap:8px}.btn-row>*{flex:1}
+.link-btn{background:none;border:none;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+
+/* thẻ cấu hình */
+.cfg-card{margin-top:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 13px}
+.cfg-card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.cfg-card .name{font-weight:700;font-size:15px}
+.cfg-card .sub{font-size:12px;color:var(--text-2);margin-top:2px}
+.cfg-card .port{font-size:22px;font-weight:600;color:var(--accent);line-height:1}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin-top:10px;font-size:13px}
+.kv dt{color:var(--text-2)}
+.kv dd{margin:0;text-align:right;word-break:break-all;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;font-weight:600}
+
+/* sửa thông số */
+.edit-toggle{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:11px 12px;border-radius:11px;border:1px dashed var(--accent);background:transparent;color:var(--accent);font-size:13.5px;font-weight:600;cursor:pointer;width:100%;text-align:left}
+.edit-toggle svg{width:16px;height:16px}
+.edit-toggle .chev{margin-left:auto;transition:transform .2s}
+.edit-toggle.open .chev{transform:rotate(180deg)}
+.edit-panel{display:none;margin-top:10px}
+.edit-panel.open{display:block}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.field input,.field select{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px}
+.field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.field .help{font-size:11.5px;color:var(--text-2);margin-top:5px;line-height:1.45}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;gap:6px;padding:4px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px}
+.seg button{flex:1;padding:8px 0;border-radius:8px;border:none;background:transparent;color:var(--text-2);font-size:13.5px;font-weight:700;cursor:pointer}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+
+.hint{display:flex;gap:9px;font-size:12.5px;line-height:1.5;border-radius:10px;padding:9px 11px;margin:10px 0}
+.hint svg{width:16px;height:16px;flex:0 0 auto;margin-top:1px}
+.hint.info{background:color-mix(in srgb,var(--info) 10%,var(--surface));color:var(--text);border:1px solid color-mix(in srgb,var(--info) 30%,transparent)}
+.hint.info svg{color:var(--info)}
+.hint.warn{background:color-mix(in srgb,var(--old) 12%,var(--surface));color:var(--text);border:1px solid color-mix(in srgb,var(--old) 40%,transparent)}
+.hint.warn svg{color:var(--old)}
+.hint.bad{background:color-mix(in srgb,var(--err) 10%,var(--surface));color:var(--text);border:1px solid color-mix(in srgb,var(--err) 35%,transparent)}
+.hint.bad svg{color:var(--err)}
+
+/* tiến trình */
+.timeline{list-style:none;margin:14px 0 0;padding:0;position:relative}
+.timeline:empty{display:none}
+.timeline li{position:relative;padding:5px 0 5px 28px;font-size:13.5px;color:var(--text-2)}
+.timeline li:before{content:"";position:absolute;left:5px;top:9px;width:12px;height:12px;border-radius:50%;border:2px solid var(--border);background:var(--surface)}
+.timeline li:not(:last-child):after{content:"";position:absolute;left:11px;top:23px;bottom:-7px;width:2px;background:var(--border)}
+.timeline li.run{color:var(--text);font-weight:600}
+.timeline li.run:before{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.timeline li.ok{color:var(--text)}.timeline li.ok:before{background:var(--done);border-color:var(--done)}
+.timeline li.ok:not(:last-child):after{background:var(--done)}
+.timeline li.bad{color:var(--err);font-weight:600}.timeline li.bad:before{background:var(--err);border-color:var(--err)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* so sánh */
+.cmp{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
+.cmp th,.cmp td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;word-break:break-all}
+.cmp thead th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-2);font-weight:700}
+.cmp tbody th{color:var(--text-2);font-weight:500;width:26%}
+.cmp td{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600}
+.cmp td.y{color:var(--done)}.cmp td.n{color:var(--err)}
+.result{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:12px 13px;margin-top:12px;font-size:13.5px;line-height:1.5}
+.result svg{width:22px;height:22px;flex:0 0 auto}
+.result b{display:block;font-size:14.5px}
+.result.ok{background:color-mix(in srgb,var(--done) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--done) 40%,transparent)}
+.result.ok svg{color:var(--done)}
+.result.bad{background:color-mix(in srgb,var(--err) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--err) 40%,transparent)}
+.result.bad svg{color:var(--err)}
+
+/* thư viện */
+.search-wrap{position:relative;margin-bottom:10px}
+.search-wrap svg{position:absolute;left:13px;top:50%;width:17px;height:17px;margin-top:-8.5px;color:var(--text-2)}
+.search-wrap input{width:100%;padding:12px 14px 12px 38px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px}
+.search-wrap input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.lib-stats{display:flex;gap:8px;margin-bottom:12px}
+.lib-stats div{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.lib-stats b{display:block;font-size:20px;font-weight:700}
+.lib-stats small{font-size:11.5px;color:var(--text-2)}
+.dev-list{display:flex;flex-direction:column;gap:8px}
+.dev-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.dev-card:active{background:var(--surface-2)}
+.dev-card .name{font-weight:600;font-size:14.5px}
+.dev-card .meta{font-size:12px;color:var(--text-2);margin-top:2px;word-break:break-all}
+.dev-card .port{font-size:14px;color:var(--accent);flex:0 0 auto;text-align:right;font-weight:600}
+.dev-card .port small{display:block;font-family:"Be Vietnam Pro",sans-serif;font-size:10.5px;color:var(--text-2);font-weight:500}
+.dev-card mark{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.empty{padding:36px 10px;text-align:center;color:var(--text-2);font-size:14px;line-height:1.6}
+.empty svg{width:40px;height:40px;opacity:.5;display:block;margin:0 auto 8px}
+
+/* terminal */
+#term{background:var(--term-bg);color:var(--term-ink);font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;height:46vh;min-height:240px;overflow:auto;border-radius:12px;padding:10px;white-space:pre-wrap;word-break:break-all;line-height:1.45}
+#term .tx{color:#7CC4FF}#term .sys{color:#F2B705}#term .er{color:#FF8A6B}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.quick button{padding:10px 0;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:14px;cursor:pointer}
+.send-row{display:flex;gap:8px;margin-top:8px}
+.send-row input{flex:1;padding:11px 13px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;font-family:"IBM Plex Mono",monospace}
+.send-row button{flex:0 0 auto;width:auto;padding:0 18px}
+
+/* ===== Bottom nav ===== */
+nav{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:var(--surface);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -2px 10px rgba(0,0,0,.05);z-index:8;border-radius:14px 14px 0 0}
+nav button{flex:1;padding:11px 0 9px;background:none;border:none;cursor:pointer;color:var(--text-2);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;font-weight:600;position:relative;transition:color .25s}
+nav button svg{width:21px;height:21px;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+nav button.active{color:var(--accent)}
+nav button.active svg{transform:translateY(-3px) scale(1.12)}
+nav button::after{content:"";position:absolute;top:3px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50% 50% 50% 0;transform:rotate(-45deg) scale(0);background:radial-gradient(circle at 30% 30%,#fff 0%,var(--accent) 60%);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+nav button.active::after{transform:rotate(-45deg) scale(1)}
+
+/* ===== Modal sheet ===== */
+.modal-scrim{position:fixed;inset:0;background:rgba(8,14,20,.55);z-index:30;display:none;align-items:flex-end;justify-content:center}
+.modal-scrim.show{display:flex}
+.modal-sheet{width:100%;max-width:480px;max-height:86vh;overflow-y:auto;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.25);animation:sheet .32s cubic-bezier(.2,.8,.3,1) both}
+@keyframes sheet{from{transform:translateY(40px);opacity:.4}}
+.modal-sheet .grab{width:40px;height:4px;border-radius:4px;background:var(--border);margin:-8px auto 12px}
+.mtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.mtop h2{font-size:17px;margin:0;font-weight:700}
+.mclose{width:30px;height:30px;border-radius:100px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0}
+.mclose svg{width:15px;height:15px}
+.mbody{font-size:14px;line-height:1.55;color:var(--text)}
+.mactions{display:flex;gap:8px;margin-top:16px}.mactions>*{flex:1}
+
+/* hướng dẫn */
+.hp-intro{font-size:13.5px;color:var(--text-2);line-height:1.55;margin:0 0 12px}
+.hp details{border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--surface-2)}
+.hp summary{padding:12px 13px;font-size:14px;font-weight:700;list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer}
+.hp summary::-webkit-details-marker{display:none}
+.hp summary .n{width:24px;height:24px;border-radius:100px;background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.hp summary:after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--text-2);border-bottom:2px solid var(--text-2);transform:rotate(45deg);transition:transform .2s;flex:0 0 auto}
+.hp details[open] summary:after{transform:rotate(-135deg)}
+.hp .bd{padding:0 14px 12px 47px;font-size:13.5px;line-height:1.6}
+.hp ol,.hp ul{padding-left:18px;margin:4px 0}
+.hp li{margin:3px 0}
+.hp code{background:var(--surface);border:1px solid var(--border);padding:1px 5px;border-radius:5px;font-size:12.5px;font-family:"IBM Plex Mono",monospace}
+.hp .ver{text-align:center;font-size:11.5px;color:var(--text-2);margin-top:14px}
+
+/* toast */
+#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%) translateY(-20px);max-width:440px;width:calc(100% - 36px);padding:12px 14px;border-radius:12px;background:var(--text);color:var(--bg);font-size:13.5px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:all .25s;z-index:40}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{background:var(--done);color:#fff}#toast.err{background:var(--err);color:#fff}
 .hidden{display:none!important}
-.dev{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
-.dev .t{font-weight:700}.dev .s{font-size:13px;color:var(--mute);margin:2px 0 8px;word-break:break-all}
-.src{border:2px dashed var(--old);border-radius:10px;padding:8px 10px;margin-top:8px;background:#fffaf0}
+details.adv summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--text-2);list-style:none}
+details.adv summary::-webkit-details-marker{display:none}
+@media (min-width:700px){ .modal-scrim{align-items:center} .modal-sheet{border-radius:18px;max-width:560px} }
 </style>
 </head>
 <body>
-<header>
-  <span class="dot" id="dot"></span>
-  <h1>Modem kết nối trung tâm<small id="status">Chưa kết nối cáp</small></h1>
-  <button id="btnInstall" class="hidden">📲 Cài app</button>
-</header>
-<main>
-<div class="warn hidden" id="nosupport"></div>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4H9a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H3.5A1.5 1.5 0 0 1 2 16z"/><path d="M22 5.5A1.5 1.5 0 0 0 20.5 4H15a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5h6a1.5 1.5 0 0 0 1.5-1.5z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+  <symbol id="i-lib" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="m16.5 4.6 3.9-1 3.6 15.4-3.9 1z" transform="translate(-2.5 0.6)"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="m7 10 3 2.5L7 15M12.5 15H17"/></symbol>
+  <symbol id="i-read" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5" transform="rotate(180 12 12)"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-write" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4.5M12 17.2v.01"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.3 3 3 6-6.3"/></symbol>
+  <symbol id="i-bad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/></symbol>
+</svg>
 
-<!-- ===== Kết nối ===== -->
-<div class="card">
-  <button class="pri big" id="btnConn">🔌 Kết nối cáp USB</button>
-  <div class="hint" id="devinfo">Cáp USB‑C → RS232 cắm vào điện thoại, đầu DB9 cắm vào module (đã cấp nguồn).</div>
-  <details style="margin-top:8px"><summary>Tùy chọn cổng</summary>
-    <div class="row">
-      <div style="flex:1 1 40%"><label>Tốc độ (baud)</label>
-        <select id="baud"><option>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></div>
-      <div style="flex:1 1 40%"><label>Ký tự kết thúc khi gửi</label>
-        <select id="eol"><option value="auto">Tự dò</option><option value="">Không (như AccessPort)</option><option value="\r">CR</option><option value="\r\n">CR+LF</option><option value="\n">LF</option></select></div>
+<div id="app">
+  <header>
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">Hệ thống chiếu sáng đô thị</div>
+        <h1>Modem <span>Minh Sáng</span></h1>
+      </div>
+      <div style="display:flex;align-items:center">
+        <button class="pill-btn hidden" id="btnInstall">📲 Cài app</button>
+        <button class="round-btn" id="btnHelp" aria-label="Hướng dẫn sử dụng" title="Hướng dẫn sử dụng">
+          <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>
+        </button>
+      </div>
     </div>
-  </details>
+    <div class="conn" id="conn">
+      <span class="led"></span>
+      <div class="ct"><b id="connTitle">Chưa kết nối cáp</b><small id="connSub">Cắm cáp USB‑C → RS232 vào module đã cấp nguồn</small></div>
+      <button id="btnConn">Kết nối</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="notice" id="nosupport"></div>
+
+    <!-- ========== SAO CHÉP ========== -->
+    <section class="view active" id="view-clone">
+      <div class="card">
+        <div class="step-head">
+          <span class="step-no old">1</span>
+          <div><h3>Đọc module cũ</h3><small>Lấy thông số đang chạy trong tủ</small></div>
+          <span class="done-tag hidden" id="srcTag">Đã có nguồn</span>
+        </div>
+        <button class="btn" id="btnReadOld" disabled><svg fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-read"/></svg>Đọc thông số module cũ</button>
+        <div id="srcBox"></div>
+        <button class="link-btn" id="btnPickLib">Module cũ hỏng? Chọn từ thư viện</button>
+      </div>
+
+      <div class="card">
+        <div class="step-head">
+          <span class="step-no new">2</span>
+          <div><h3>Nạp module mới</h3><small>Ghi thông số vào module thay thế</small></div>
+        </div>
+        <p class="desc">Giữ nguyên cáp ở điện thoại, chỉ chuyển đầu DB9 sang <b>module mới</b> và cấp nguồn rồi bấm nạp.</p>
+
+        <button class="edit-toggle" id="editToggle" disabled>
+          <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-edit"/></svg>
+          Sửa thông số trước khi nạp
+          <svg class="chev" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-chev"/></svg>
+        </button>
+        <div class="edit-panel" id="editPanel">
+          <div class="field"><label>Tên tủ</label><input id="eName" placeholder="vd: Tủ Mê Linh 02"><div class="help">Chỉ lưu trong app – module không chứa tên tủ, máy chủ nhận tủ theo Port.</div></div>
+          <div class="grid2">
+            <div class="field"><label>Port</label><input id="ePort" class="mono" inputmode="numeric"></div>
+            <div class="field"><label>Giao thức</label><div class="seg" id="eProtoSeg"><button data-v="TCP" class="on">TCP</button><button data-v="UDP">UDP</button></div></div>
+          </div>
+          <div class="field"><label>Server</label><input id="eHost" class="mono" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+          <div class="grid2">
+            <div class="field"><label>Mã hóa</label><div class="seg" id="eEncSeg"><button data-v="Bat" class="on">Bật</button><button data-v="Tat">Tắt</button></div></div>
+            <div class="field" id="ePwBox"><label>Password</label><input id="ePw" class="mono" maxlength="8" autocapitalize="off"></div>
+          </div>
+          <div class="help" style="font-size:11.5px;color:var(--text-2);line-height:1.45">Đổi Port → tự đổi server <b>hcm**.lirecon.com</b> và password <b>T + 4 số cuối port</b>.</div>
+          <button class="link-btn" id="btnResetEdit">↩ Trả về giống module cũ</button>
+        </div>
+
+        <div id="diffNote"></div>
+        <button class="btn new" id="btnWriteNew" disabled style="margin-top:12px"><svg fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-write"/></svg>Nạp vào module mới</button>
+        <ul class="timeline" id="steps"></ul>
+        <div id="cmpBox"></div>
+      </div>
+    </section>
+
+    <!-- ========== THƯ VIỆN ========== -->
+    <section class="view" id="view-lib">
+      <div class="lib-stats">
+        <div><b id="stTotal">0</b><small>Tủ đã lưu</small></div>
+        <div><b id="stDone">0</b><small>Đã nạp module mới</small></div>
+      </div>
+      <div class="search-wrap">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-search"/></svg>
+        <input id="libSearch" placeholder="Tìm tên tủ, port, server… (có dấu hoặc không)" autocomplete="off">
+      </div>
+      <div class="dev-list" id="libList"></div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn ghost sm" id="btnExport">⤴ Xuất file</button>
+        <button class="btn ghost sm" id="btnImport">⤵ Nhập file</button>
+      </div>
+      <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
+    </section>
+
+    <!-- ========== CÀI TAY ========== -->
+    <section class="view" id="view-manual">
+      <div class="sec-title">Nhập thông số</div>
+      <div class="card">
+        <div class="grid2">
+          <div class="field"><label>Port</label><input id="mPort" class="mono" inputmode="numeric" placeholder="19981"></div>
+          <div class="field"><label>Giao thức</label><div class="seg" id="mProtoSeg"><button data-v="TCP" class="on">TCP</button><button data-v="UDP">UDP</button></div></div>
+        </div>
+        <div class="field"><label>Server (IP hoặc DNS)</label><input id="mHost" class="mono" placeholder="hcm99.lirecon.com" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="help">Tự gợi ý theo Port, sửa tay nếu khác.</div></div>
+        <div class="grid2">
+          <div class="field"><label>Mã hóa</label><div class="seg" id="mEncSeg"><button data-v="Bat" class="on">Bật</button><button data-v="Tat">Tắt</button></div></div>
+          <div class="field" id="mPwBox"><label>Password</label><input id="mPw" class="mono" maxlength="8" placeholder="T9981" autocapitalize="off"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn new" id="btnManualWrite" disabled><svg fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-write"/></svg>Ghi vào module</button>
+        </div>
+        <button class="link-btn" id="btnManualSrc">Dùng làm nguồn sao chép →</button>
+        <ul class="timeline" id="mSteps"></ul>
+        <div id="mCmp"></div>
+      </div>
+      <div class="sec-title">Công cụ</div>
+      <div class="card">
+        <div class="btn-row">
+          <button class="btn ghost sm" id="btnReadAny" disabled>Đọc thông số</button>
+          <button class="btn ghost sm" id="btnReboot" disabled>Khởi động lại</button>
+        </div>
+        <div id="anyBox"></div>
+        <details class="adv" style="margin-top:14px"><summary>⚙ Tùy chọn cổng nâng cao</summary>
+          <div class="grid2" style="margin-top:10px">
+            <div class="field"><label>Tốc độ (baud)</label><select id="baud"><option>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></div>
+            <div class="field"><label>Kết thúc lệnh</label><select id="eol"><option value="auto">Tự dò</option><option value="">Không</option><option value="\r">CR</option><option value="\r\n">CR+LF</option><option value="\n">LF</option></select></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ========== TERMINAL ========== -->
+    <section class="view" id="view-term">
+      <div id="term"></div>
+      <div class="quick"><button data-send="hi">hi</button><button data-send="1">1</button><button data-send="2">2</button><button data-send="3">3</button></div>
+      <div class="send-row"><input id="txt" placeholder="Nhập lệnh…" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn sm" id="btnSend">Gửi</button></div>
+      <div class="btn-row" style="margin-top:10px"><button class="btn ghost sm" id="btnClear">Xóa màn hình</button><button class="btn ghost sm" id="btnCopy">Sao chép log</button></div>
+    </section>
+  </main>
+
+  <nav>
+    <button data-tab="clone" class="active"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>Sao chép</button>
+    <button data-tab="lib"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-lib"/></svg>Thư viện</button>
+    <button data-tab="manual"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sliders"/></svg>Cài tay</button>
+    <button data-tab="term"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-term"/></svg>Terminal</button>
+  </nav>
 </div>
 
-<!-- ===== TAB SAO CHÉP ===== -->
-<section id="pane-clone">
-  <div class="card">
-    <h2><span class="badge old">BƯỚC 1</span> Đọc module CŨ</h2>
-    <button class="oldb big" id="btnReadOld" disabled>📖 Đọc thông số module cũ</button>
-    <div class="hint">Module cũ hỏng, không đọc được? Chọn thông số đã lưu ở tab <b>Thư viện</b>.</div>
-    <div id="srcBox"></div>
-  </div>
+<!-- ===== Hộp thoại chung ===== -->
+<div class="modal-scrim" id="dlg"><div class="modal-sheet" role="dialog">
+  <div class="grab"></div>
+  <div class="mtop"><h2 id="dlgTitle"></h2><button class="mclose" data-close><svg fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#i-x"/></svg></button></div>
+  <div class="mbody" id="dlgBody"></div>
+  <div class="mactions" id="dlgActions"></div>
+</div></div>
 
-  <div class="card">
-    <h2><span class="badge new">BƯỚC 2</span> Nạp module MỚI</h2>
-    <p class="note" style="margin-top:0">Giữ nguyên cáp ở điện thoại. Rút đầu DB9 khỏi module cũ → cắm sang module mới → cấp nguồn module mới → bấm nạp.</p>
-    <details id="editBox" style="margin-bottom:10px"><summary>✏️ Sửa thông số trước khi nạp (lắp cho tủ khác)</summary>
-      <label>Tên tủ (chỉ lưu trong app – module không chứa tên tủ)</label>
-      <input id="eName" placeholder="vd: Tủ Mê Linh 02">
-      <div class="row">
-        <div style="flex:1 1 30%"><label>Giao thức</label><select id="eProto"><option>TCP</option><option>UDP</option></select></div>
-        <div style="flex:1 1 60%"><label>Port đã chuyển đổi</label><input id="ePort" inputmode="numeric"></div>
-      </div>
-      <label>Địa chỉ server</label>
-      <input id="eHost" autocapitalize="off" autocorrect="off" spellcheck="false">
-      <div class="row">
-        <div style="flex:1 1 40%"><label>Mã hóa</label><select id="eEnc"><option value="Bat">Bật</option><option value="Tat">Tắt</option></select></div>
-        <div style="flex:1 1 50%" id="ePwBox"><label>Password (1–8 ký tự)</label><input id="ePw" maxlength="8" autocapitalize="off"></div>
-      </div>
-      <div class="hint">Đổi Port → app tự đổi theo quy ước: server <b>hcm**.lirecon.com</b> (** = 2 số sau số đầu của port) và password <b>T + 4 số cuối port</b>. Vẫn sửa tay được.</div>
-      <div class="row" style="margin-top:8px"><button class="sm" id="btnResetEdit">↩️ Trả về giống module cũ</button></div>
-    </details>
-    <div id="diffNote"></div>
-    <button class="okb big" id="btnWriteNew" disabled>⬇️ Nạp vào module mới</button>
-    <ul class="steps" id="steps"></ul>
-    <div id="cmpBox"></div>
-  </div>
-</section>
+<!-- ===== Hướng dẫn ===== -->
+<div class="modal-scrim" id="help"><div class="modal-sheet hp" role="dialog" aria-label="Hướng dẫn sử dụng">
+  <div class="grab"></div>
+  <div class="mtop"><h2>📖 Hướng dẫn sử dụng</h2><button class="mclose" data-close><svg fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#i-x"/></svg></button></div>
+  <p class="hp-intro">Đọc cấu hình module kết nối trung tâm 4G (Minh Sáng) và nạp sang module khác qua cổng Type‑C của điện thoại.</p>
 
-<!-- ===== TAB THƯ VIỆN ===== -->
-<section id="pane-lib" class="hidden">
-  <div class="card">
-    <h2>Thư viện thiết bị</h2>
-    <input id="libSearch" placeholder="Tìm theo tên tủ, port, server…">
-    <div id="libList" style="margin-top:10px"></div>
-    <div class="row" style="margin-top:6px">
-      <button id="btnExport">⤴️ Xuất file</button>
-      <button id="btnImport">⤵️ Nhập file</button>
-      <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
-    </div>
-    <p class="note">Mỗi lần đọc module cũ, thông số được lưu ở đây. Xuất file .json để sao lưu hoặc chuyển sang điện thoại của anh em trong đội.</p>
-  </div>
-</section>
+  <details open><summary><span class="n">1</span>Chuẩn bị</summary><div class="bd"><ul>
+    <li>Điện thoại <b>Android</b> có <b>OTG</b>, mở bằng <b>Chrome</b>. iPhone không dùng được.</li>
+    <li>Cáp <b>USB‑C → RS232 DB9</b> (chip CH340, FTDI, CP2102 hoặc PL2303), hoặc cáp USB → RS232 kèm đầu OTG USB‑C → USB‑A.</li>
+    <li>Cáp loại <b>RS232</b>, không dùng loại TTL. Nếu hai đầu DB9 cùng giới tính thì thêm <b>đầu đổi giới tính</b>.</li>
+    <li>Module phải được <b>cấp nguồn</b>.</li></ul></div></details>
 
-<!-- ===== TAB CÀI TAY ===== -->
-<section id="pane-manual" class="hidden">
-  <div class="card">
-    <h2>Cài tay thông số</h2>
-    <div class="row">
-      <div style="flex:1 1 30%"><label>Giao thức</label><select id="mProto"><option>TCP</option><option>UDP</option></select></div>
-      <div style="flex:1 1 60%"><label>Port đã chuyển đổi</label><input id="mPort" inputmode="numeric" placeholder="vd: 19981"></div>
-    </div>
-    <label>Địa chỉ server (IP hoặc DNS)</label>
-    <input id="mHost" placeholder="hcm99.lirecon.com" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <div class="hint">Gợi ý tự động "hcm**.lirecon.com" theo mã đầu của Port – sửa tay nếu khác.</div>
-    <div class="row">
-      <div style="flex:1 1 40%"><label>Mã hóa đường truyền</label><select id="mEnc"><option value="Bat">Bật</option><option value="Tat">Tắt</option></select></div>
-      <div style="flex:1 1 50%" id="mPwBox"><label>Password (1–8 ký tự)</label><input id="mPw" maxlength="8" placeholder="T + 4 số cuối port" autocapitalize="off"></div>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <button class="pri" id="btnManualWrite" disabled>⬇️ Ghi vào module</button>
-      <button id="btnManualSrc">Dùng làm nguồn sao chép</button>
-    </div>
-    <ul class="steps" id="mSteps"></ul>
-    <div id="mCmp"></div>
-  </div>
-  <div class="card">
-    <h2>Khác</h2>
-    <div class="row"><button id="btnReadAny" disabled>📖 Đọc thông số</button><button id="btnReboot" disabled>🔄 Khởi động lại module</button></div>
-    <div id="anyBox"></div>
-  </div>
-</section>
+  <details><summary><span class="n">2</span>Kết nối cáp</summary><div class="bd"><ol>
+    <li>Cắm cáp vào điện thoại và cổng DB9 của module.</li>
+    <li>Bấm <b>Kết nối</b> trên thanh trạng thái, chọn cáp, bấm <b>Cho phép</b>.</li>
+    <li>Đèn trên thanh trạng thái chuyển <b>xanh</b> là đã kết nối.</li></ol></div></details>
 
-<!-- ===== TAB TERMINAL ===== -->
-<section id="pane-term" class="hidden">
-  <div class="card">
-    <h2>Terminal</h2>
-    <div id="term"></div>
-    <div class="row" style="margin-top:8px">
-      <button class="qbtn" data-send="hi">hi</button><button class="qbtn" data-send="1">1</button>
-      <button class="qbtn" data-send="2">2</button><button class="qbtn" data-send="3">3</button>
-    </div>
-    <div class="row" style="margin-top:8px">
-      <input id="txt" placeholder="Nhập lệnh…" autocapitalize="off" autocorrect="off" spellcheck="false" style="flex:1 1 60%">
-      <button class="pri" id="btnSend" style="flex:0 0 auto">Gửi</button>
-    </div>
-    <div class="row" style="margin-top:8px"><button id="btnClear">Xóa màn hình</button><button id="btnCopy">Sao chép log</button></div>
-  </div>
-  <div class="card"><details><summary>Cáp cần dùng</summary><div class="note" style="margin-top:8px">
-    • Cáp <b>USB‑C → RS232 DB9</b> (chip CH340 / FTDI / CP2102 / PL2303), loại RS232 – không phải TTL.<br>
-    • Hoặc cáp <b>USB → RS232 CH340</b> + <b>đầu OTG USB‑C → USB‑A</b>.<br>
-    • Thêm <b>đầu đổi giới tính DB9</b> nếu hai đầu cùng loại.<br>
-    • Điện thoại Android có OTG, dùng Chrome. iPhone không hỗ trợ.</div></details></div>
-</section>
-</main>
+  <details><summary><span class="n">3</span>Thay module hỏng trong cùng tủ</summary><div class="bd"><ol>
+    <li>Cắm cáp vào <b>module cũ</b>, bấm <b>Đọc thông số module cũ</b>, đặt tên tủ.</li>
+    <li>Cáp vẫn cắm ở điện thoại. Chuyển đầu DB9 sang <b>module mới</b>, cấp nguồn.</li>
+    <li>Bấm <b>Nạp vào module mới</b>. Bảng so sánh có ✓ ở tất cả các dòng là đạt.</li>
+    <li><b>Tháo/tắt module cũ</b>. Hai module cùng port chạy cùng lúc thì máy chủ không kết nối được.</li></ol></div></details>
 
-<nav>
-  <button data-tab="clone" class="act"><span>🔁</span>Sao chép</button>
-  <button data-tab="lib"><span>🗂️</span>Thư viện</button>
-  <button data-tab="manual"><span>⚙️</span>Cài tay</button>
-  <button data-tab="term"><span>⌨️</span>Terminal</button>
-</nav>
+  <details><summary><span class="n">4</span>Lắp module cho tủ khác</summary><div class="bd"><ol>
+    <li>Đọc một module mẫu, hoặc chọn một tủ trong Thư viện.</li>
+    <li>Mở <b>Sửa thông số trước khi nạp</b>, nhập <b>tên tủ</b> và <b>Port</b> đã đăng ký cho tủ đó trên máy chủ.</li>
+    <li>App tự đổi server và password theo port. Kiểm tra lại rồi bấm nạp.</li>
+    <li>Nếu app báo <b>trùng port</b> với tủ khác, kiểm tra lại số port.</li></ol></div></details>
+
+  <details><summary><span class="n">5</span>Module cũ hỏng, không đọc được</summary><div class="bd"><ul>
+    <li>Tủ đã từng đọc: bấm <b>Chọn từ thư viện</b> ở Bước 1, rồi nạp như bình thường.</li>
+    <li>Tủ chưa có trong Thư viện: vào tab <b>Cài tay</b>, nhập port của tủ (xem trên máy chủ TCP_IP_Connect), rồi ghi vào module.</li>
+    <li>Nên đọc sẵn tất cả các tủ đang chạy tốt để có thông số khi cần.</li></ul></div></details>
+
+  <details><summary><span class="n">6</span>Thư viện và chia sẻ</summary><div class="bd"><ul>
+    <li>Thư viện lưu trên <b>từng điện thoại</b>. Xóa dữ liệu Chrome thì sẽ mất.</li>
+    <li><b>Xuất file</b>: tạo file <code>.json</code> để sao lưu hoặc gửi qua Zalo. <b>Nhập file</b>: nạp file nhận được.</li>
+    <li>Bấm vào một tủ để dùng làm nguồn, đổi tên hoặc xóa.</li></ul></div></details>
+
+  <details><summary><span class="n">7</span>Kiểm tra sau khi nạp</summary><div class="bd"><ol>
+    <li>Lắp module vào tủ, gắn <b>SIM 4G</b> còn dùng được.</li>
+    <li>Đèn <b>Online</b> chớp nhanh là đã kết nối trung tâm.</li>
+    <li>Trên máy chủ <b>TCP_IP_Connect</b>, port của tủ hiện <b>Connected</b>.</li></ol></div></details>
+
+  <details><summary><span class="n">8</span>Quy ước thông số</summary><div class="bd"><ul>
+    <li>Lệnh gửi vào module: <code>"TCP","hcm**.lirecon.com",1****</code></li>
+    <li>Server: <code>hcm</code> + 2 số liền sau số đầu của port.</li>
+    <li>Password: <code>T</code> + 4 số cuối port.</li>
+    <li>Ví dụ: port <b>19981</b> → <code>hcm99.lirecon.com</code>, <code>T9981</code>.</li></ul></div></details>
+
+  <details><summary><span class="n">9</span>Xử lý lỗi</summary><div class="bd"><ul>
+    <li><b>Không thấy cáp:</b> kiểm tra OTG đã bật chưa, cắm lại, hoặc thử cáp khác.</li>
+    <li><b>Không phản hồi:</b> kiểm tra nguồn module, loại cáp RS232, đầu đổi giới tính DB9.</li>
+    <li><b>Dừng giữa chừng:</b> module chỉ chờ một thời gian ngắn. Ngắt rồi kết nối lại, sau đó nạp lại.</li>
+    <li><b>Có dấu ✗:</b> bấm nạp lại.</li>
+    <li><b>Đã nạp đúng mà không Connected:</b> kiểm tra SIM, sóng 4G, và xem có module khác trùng port không.</li>
+    <li>Tab <b>Terminal</b> hiện toàn bộ nội dung trao đổi với module. Bấm <b>Sao chép log</b> để gửi người hỗ trợ.</li></ul></div></details>
+
+  <details><summary><span class="n">10</span>Cài app lên điện thoại</summary><div class="bd">
+    Bấm <b>📲 Cài app</b> trên đầu trang. Nếu không thấy nút này: menu <b>⋮</b> của Chrome → <b>Cài đặt ứng dụng</b>. Sau khi cài, app dùng được cả khi không có mạng.</div></details>
+  <div class="ver">Modem Minh Sáng · bản 2026‑11</div>
+</div></div>
+
+<div id="toast"></div>
 
 <script>
 "use strict";
@@ -208,7 +473,36 @@ const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
 };
-const unaccent = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+const unaccent = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D");
+const icon = (id, w = 2) => `<svg fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"><use href="#${id}"/></svg>`;
+
+/* ============ Toast & hộp thoại ============ */
+let toastT;
+function toast(msg, type){ const t = $("toast"); t.textContent = msg; t.className = "show " + (type || ""); clearTimeout(toastT); toastT = setTimeout(() => t.className = "", 3200); }
+function openScrim(el){ el.classList.add("show"); document.body.style.overflow = "hidden"; }
+function closeScrim(el){ el.classList.remove("show"); if (!document.querySelector(".modal-scrim.show")) document.body.style.overflow = ""; }
+let dlgResolve = null;
+function dialog({title, html, actions}){
+  return new Promise(res => {
+    dlgResolve = res;
+    $("dlgTitle").textContent = title; $("dlgBody").innerHTML = html || "";
+    const box = $("dlgActions"); box.innerHTML = "";
+    for (const a of actions){
+      const b = document.createElement("button"); b.className = "btn sm " + (a.cls || ""); b.textContent = a.text;
+      b.onclick = () => { const v = a.value === "input" ? ($("dlgInput")?.value ?? "") : a.value; finishDlg(v); };
+      box.appendChild(b);
+    }
+    openScrim($("dlg"));
+    const inp = $("dlgInput"); if (inp){ setTimeout(() => { inp.focus(); inp.select(); }, 250); inp.onkeydown = e => { if (e.key === "Enter") finishDlg(inp.value); }; }
+  });
+}
+function finishDlg(v){ closeScrim($("dlg")); const r = dlgResolve; dlgResolve = null; if (r) r(v); }
+$("dlg").addEventListener("click", e => { if (e.target.id === "dlg" || e.target.closest("[data-close]")) finishDlg(null); });
+const uiConfirm = (title, html, okText = "Đồng ý", okCls = "") => dialog({title, html, actions:[{text:"Hủy", cls:"ghost", value:false},{text:okText, cls:okCls, value:true}]});
+const uiAlert = (title, html) => dialog({title, html, actions:[{text:"Đã hiểu", value:true}]});
+const uiPrompt = (title, label, def = "", hint = "") => dialog({title,
+  html:`<div class="field"><label>${esc(label)}</label><input id="dlgInput" value="${esc(def)}">${hint ? `<div class="help">${hint}</div>` : ""}</div>`,
+  actions:[{text:"Hủy", cls:"ghost", value:null},{text:"Lưu", value:"input"}]});
 
 /* ============ Terminal ============ */
 let rxAll = "";
@@ -394,18 +688,19 @@ class NativeSerial {
 
 
 /* ============ Kết nối ============ */
-let link = null, busy = false;
+let link = null, busy = false, source = null, sourceName = "";
 function refreshButtons(){
   const on = !!link;
   $("btnConn").disabled = busy;
   for (const id of ["btnReadOld","btnManualWrite","btnReadAny","btnReboot"]) $(id).disabled = !on || busy;
   $("btnWriteNew").disabled = !on || busy || !source;
+  $("editToggle").disabled = !source || busy;
 }
-function setConnected(on, info){
-  $("dot").classList.toggle("on", on);
-  $("status").textContent = on ? ("Đã kết nối · " + info) : "Chưa kết nối cáp";
-  $("btnConn").textContent = on ? "⏏️ Ngắt kết nối" : "🔌 Kết nối cáp USB";
-  $("btnConn").classList.toggle("pri", !on);
+function setConnected(on, title, sub){
+  $("conn").classList.toggle("on", on);
+  $("connTitle").textContent = on ? (title || "Đã kết nối") : "Chưa kết nối cáp";
+  $("connSub").textContent = on ? (sub || "") : "Cắm cáp USB‑C → RS232 vào module đã cấp nguồn";
+  $("btnConn").textContent = on ? "Ngắt" : "Kết nối";
   refreshButtons();
 }
 function onRx(u){ const s = dec.decode(u); rxAll += s; if (rxAll.length > 200000) rxAll = rxAll.slice(-100000); termAdd(s); }
@@ -417,19 +712,19 @@ async function connect(){
     else if ("serial" in navigator){ link = new NativeSerial(await navigator.serial.requestPort()); }
     else throw new Error("Trình duyệt không hỗ trợ USB");
     await link.open(baud);
-    setConnected(true, link.type + " " + baud);
-    $("devinfo").textContent = "Cáp: " + (dev ? (dev.productName || "USB") : "Serial") + " (" + link.type + ") · " + baud + " 8‑N‑1";
-    sys("Đã mở cổng " + link.type + " " + baud + " 8N1");
-    link.readLoop(onRx, e => { sys("Mất kết nối: " + e.message); disconnect(); });
+    setConnected(true, "Đã kết nối · " + link.type, (dev ? (dev.productName || "USB‑Serial") : "Serial") + " · " + baud + " 8‑N‑1");
+    sys("Đã mở cổng " + link.type + " " + baud + " 8N1"); toast("Đã kết nối cáp", "ok");
+    link.readLoop(onRx, e => { sys("Mất kết nối: " + e.message); disconnect(); toast("Mất kết nối cáp", "err"); });
   }catch(e){
     if (e.name === "NotFoundError") return;
-    termAdd("\n[Lỗi] " + e.message + "\n", "er"); alert("Không kết nối được: " + e.message);
+    termAdd("\n[Lỗi] " + e.message + "\n", "er");
+    uiAlert("Không kết nối được", esc(e.message) + "<br><br>Kiểm tra OTG, rút ra cắm lại cáp rồi thử lại.");
     try{ await link?.close(); }catch(_){} link = null; setConnected(false);
   }
 }
 async function disconnect(){ const l = link; link = null; setConnected(false); if (l) await l.close(); }
 $("btnConn").onclick = () => link ? disconnect() : connect();
-if ("usb" in navigator) navigator.usb.addEventListener("disconnect", e => { if (link && link.dev === e.device){ sys("Đã rút cáp USB"); disconnect(); } });
+if ("usb" in navigator) navigator.usb.addEventListener("disconnect", e => { if (link && link.dev === e.device){ sys("Đã rút cáp USB"); disconnect(); toast("Đã rút cáp USB"); } });
 
 /* ============ Gửi / chờ ============ */
 let eolDetected = store.get("eolDetected", null);
@@ -440,12 +735,12 @@ async function send(text, eol){
   termAdd("\n» " + text + (e ? " ⏎" : "") + "\n", "tx");
   await link.write(enc.encode(text + e));
 }
-async function sendUI(t){ try{ await send(t); }catch(e){ termAdd("\n[Lỗi] " + e.message + "\n","er"); } }
+async function sendUI(t){ try{ await send(t); }catch(e){ termAdd("\n[Lỗi] " + e.message + "\n","er"); toast(e.message, "err"); } }
 document.querySelectorAll("[data-send]").forEach(b => b.onclick = () => sendUI(b.dataset.send));
 $("btnSend").onclick = () => { const t = $("txt").value; if (!t) return; sendUI(t); $("txt").value = ""; };
 $("txt").addEventListener("keydown", e => { if (e.key === "Enter") $("btnSend").click(); });
 $("btnClear").onclick = () => { term.textContent = ""; };
-$("btnCopy").onclick = async () => { try{ await navigator.clipboard.writeText(term.textContent); alert("Đã sao chép log"); }catch(e){ alert("Không sao chép được"); } };
+$("btnCopy").onclick = async () => { try{ await navigator.clipboard.writeText(term.textContent); toast("Đã sao chép log", "ok"); }catch(e){ toast("Không sao chép được", "err"); } };
 
 const mark = () => rxAll.length;
 async function waitFor(re, from, ms){
@@ -475,15 +770,13 @@ async function openMenu(){
 }
 
 /* ============ Cấu hình: đọc / ghi ============ */
-// cfg = {proto, host, port, enc:"Bat"|"Tat", pw}
 function parseParams(t){
   t = unaccent(t);
   const s = t.match(/connection:\s*"?(TCP|UDP)"?\s*,\s*"([^"]+)"\s*,\s*(\d+)/i);
   if (!s) return null;
   const e = t.match(/Ma hoa[^:\n]*:\s*(Bat|Tat)/i);
   const p = t.match(/Password[^:\n]*:\s*"([^"]*)"/i);
-  return {proto:s[1].toUpperCase(), host:s[2].trim(), port:s[3],
-          enc: e ? (/^b/i.test(e[1]) ? "Bat" : "Tat") : "?", pw: p ? p[1] : ""};
+  return {proto:s[1].toUpperCase(), host:s[2].trim(), port:s[3], enc: e ? (/^b/i.test(e[1]) ? "Bat" : "Tat") : "?", pw: p ? p[1] : ""};
 }
 const RE_PARAMS = /Password duong truyen\s*:|Ma hoa du lieu duong truyen\s*:/i;
 async function readParams(){
@@ -510,13 +803,13 @@ function hostFor(port, host){
   if (!host || /^hcm\d\d\.lirecon\.com$/i.test(host)) return "hcm" + port.slice(1,3) + ".lirecon.com";
   return host;
 }
-function cfgLine(c){ return `"${c.proto}","${c.host}",${c.port}`; }
+const cfgLine = c => `"${c.proto}","${c.host}",${c.port}`;
+const encTxt = v => v === "Bat" ? "Bật" : v === "Tat" ? "Tắt" : v;
 
 function stepList(el, names){ el.innerHTML = ""; return names.map(n => { const li = document.createElement("li"); li.textContent = n; el.appendChild(li); return li; }); }
-
 async function writeConfig(cfg, stepsEl){
   const encOn = cfg.enc === "Bat";
-  const names = ["Mở menu cài đặt (hi → 2)", "Cài lại Server (1)", "Gửi " + cfgLine(cfg), "Cài lại mã hóa (1)", "Mã hóa: " + (encOn ? "Bật" : "Tắt")];
+  const names = ["Mở menu cài đặt", "Cài lại Server", "Gửi " + cfgLine(cfg), "Cài lại mã hóa", "Mã hóa: " + encTxt(cfg.enc)];
   if (encOn) names.push("Gửi password");
   names.push("Đọc lại để kiểm tra");
   const L = stepList(stepsEl, names); let i = 0;
@@ -536,55 +829,70 @@ async function writeConfig(cfg, stepsEl){
   return after;
 }
 
-function cfgTable(a, b, labA, labB){
-  const rows = [["Giao thức","proto"],["Server","host"],["Port","port"],["Mã hóa","enc"],["Password","pw"]];
-  const show = (c,k) => k === "enc" ? (c[k] === "Bat" ? "Bật" : c[k] === "Tat" ? "Tắt" : c[k]) : (c[k] || "—");
-  if (!b) return "<table class='cfg'>" + rows.map(([n,k]) => `<tr><th>${n}</th><td>${esc(show(a,k))}</td></tr>`).join("") + "</table>";
-  const eq = (k) => k === "host" ? a.host.toLowerCase() === b.host.toLowerCase() : (k === "pw" && a.enc !== "Bat") ? true : String(a[k]) === String(b[k]);
-  return `<table class='cfg'><tr><th></th><th>${labA}</th><th>${labB}</th></tr>` +
-    rows.map(([n,k]) => `<tr><th>${n}</th><td>${esc(show(a,k))}</td><td class="${eq(k)?"y":"n"}">${esc(show(b,k))} ${eq(k)?"✓":"✗"}</td></tr>`).join("") + "</table>";
+/* ---- hiển thị ---- */
+function cfgCard(c, name, sub){
+  return `<div class="cfg-card"><div class="top"><div><div class="name">${esc(name || ("Port " + c.port))}</div>${sub ? `<div class="sub">${esc(sub)}</div>` : ""}</div><div class="port mono">${esc(c.port)}</div></div>
+    <dl class="kv"><dt>Giao thức</dt><dd>${esc(c.proto)}</dd><dt>Server</dt><dd>${esc(c.host)}</dd><dt>Mã hóa</dt><dd>${esc(encTxt(c.enc))}</dd>${c.enc === "Bat" ? `<dt>Password</dt><dd>${esc(c.pw || "—")}</dd>` : ""}</dl></div>`;
 }
+function cmpTable(a, b, labA, labB){
+  const rows = [["Giao thức","proto"],["Server","host"],["Port","port"],["Mã hóa","enc"],["Password","pw"]];
+  const show = (c,k) => k === "enc" ? encTxt(c[k]) : (c[k] || "—");
+  const eq = k => k === "host" ? a.host.toLowerCase() === (b.host||"").toLowerCase() : (k === "pw" && a.enc !== "Bat") ? true : String(a[k]) === String(b[k]);
+  return `<table class="cmp"><thead><tr><th></th><th>${labA}</th><th>${labB}</th></tr></thead><tbody>` +
+    rows.map(([n,k]) => `<tr><th>${n}</th><td>${esc(show(a,k))}</td><td class="${eq(k)?"y":"n"}">${esc(show(b,k))} ${eq(k)?"✓":"✗"}</td></tr>`).join("") + "</tbody></table>";
+}
+const resultBox = (ok, title, text) => `<div class="result ${ok ? "ok" : "bad"}">${icon(ok ? "i-ok" : "i-bad")}<div><b>${title}</b>${text}</div></div>`;
+const hint = (type, html) => `<div class="hint ${type}">${icon(type === "info" ? "i-info" : "i-warn")}<div>${html}</div></div>`;
 
-/* Giữ màn hình sáng khi đang thao tác */
 let wake = null;
 async function busyOn(){ busy = true; refreshButtons(); try{ wake = await navigator.wakeLock?.request("screen"); }catch(e){} }
 function busyOff(){ busy = false; refreshButtons(); try{ wake?.release(); }catch(e){} wake = null; }
 
 /* ============ Thư viện ============ */
-const lib = { all(){ return store.get("devices", []); }, save(a){ if (!store.set("devices", a)) alert("Không lưu được vào bộ nhớ điện thoại"); renderLib(); } };
+const lib = { all(){ return store.get("devices", []); }, save(a){ if (!store.set("devices", a)) toast("Không lưu được vào bộ nhớ", "err"); renderLib(); updateDiff(); } };
 function upsertDevice(cfg, name, note){
   const a = lib.all(); const now = new Date().toISOString();
   let d = a.find(x => x.name === name);
-  if (d){ Object.assign(d, cfg, {readAt: now}); if (note != null) d.note = note; }
-  else { d = Object.assign({id: Date.now().toString(36), name, note: note || "", readAt: now}, cfg); a.push(d); }
+  const c = {proto:cfg.proto, host:cfg.host, port:String(cfg.port), enc:cfg.enc, pw:cfg.pw || ""};
+  if (d){ Object.assign(d, c, {readAt: now}); if (note != null) d.note = note; }
+  else { d = Object.assign({id: Date.now().toString(36) + Math.random().toString(36).slice(2,5), name, note: note || "", readAt: now}, c); a.push(d); }
   lib.save(a); return d;
 }
-const fmtTime = iso => { try{ return new Date(iso).toLocaleString("vi-VN", {hour12:false}); }catch(e){ return iso; } };
+const fmtTime = iso => { try{ return new Date(iso).toLocaleString("vi-VN", {hour12:false, day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"}); }catch(e){ return iso; } };
+function hl(text, q){
+  if (!q) return esc(text);
+  const src = String(text), u = unaccent(src).toLowerCase(), i = u.indexOf(q);
+  if (i < 0) return esc(src);
+  return esc(src.slice(0,i)) + "<mark>" + esc(src.slice(i, i + q.length)) + "</mark>" + esc(src.slice(i + q.length));
+}
 function renderLib(){
   const q = unaccent($("libSearch").value.trim().toLowerCase());
   const a = lib.all().slice().sort((x,y) => (y.readAt||"").localeCompare(x.readAt||""));
+  $("stTotal").textContent = a.length;
+  $("stDone").textContent = a.filter(d => /Đã nạp/.test(d.note || "")).length;
   const f = a.filter(d => !q || unaccent([d.name,d.port,d.host,d.note].join(" ").toLowerCase()).includes(q));
   const box = $("libList");
-  if (!f.length){ box.innerHTML = `<div class="empty">${a.length ? "Không có kết quả." : "Chưa có thiết bị nào. Đọc module cũ ở tab Sao chép để lưu vào đây."}</div>`; return; }
-  box.innerHTML = f.map(d => `<div class="dev" data-id="${esc(d.id)}">
-    <div class="t">${esc(d.name)}</div>
-    <div class="s">${esc(d.proto)} · ${esc(d.host)} · <b>${esc(d.port)}</b> · Mã hóa ${d.enc==="Bat"?"Bật":"Tắt"}${d.note?"<br>"+esc(d.note):""}<br>Đọc lúc ${esc(fmtTime(d.readAt))}</div>
-    <div class="row"><button class="sm oldb" data-act="use">Dùng làm nguồn</button><button class="sm" data-act="ren">Sửa tên</button><button class="sm" data-act="del">Xóa</button></div>
-  </div>`).join("");
+  if (!f.length){ box.innerHTML = `<div class="empty">${icon("i-box",1.6)}${a.length ? "Không tìm thấy tủ phù hợp." : "Chưa có tủ nào.<br>Đọc module cũ ở tab Sao chép để lưu vào đây."}</div>`; return; }
+  box.innerHTML = f.map(d => `<div class="dev-card" data-id="${esc(d.id)}">
+    <div style="min-width:0"><div class="name">${hl(d.name, q)}</div><div class="meta">${esc(d.proto)} · ${hl(d.host, q)} · Mã hóa ${encTxt(d.enc)}</div><div class="meta">${esc(fmtTime(d.readAt))}${/Đã nạp/.test(d.note||"") ? " · ✓ đã nạp" : ""}</div></div>
+    <div class="port mono">${hl(d.port, q)}<small>port</small></div></div>`).join("");
 }
 $("libSearch").oninput = renderLib;
-$("libList").onclick = e => {
-  const b = e.target.closest("button"); if (!b) return;
-  const id = b.closest(".dev").dataset.id; const a = lib.all(); const d = a.find(x => x.id === id); if (!d) return;
-  if (b.dataset.act === "use"){ setSource(d, d.name); showTab("clone"); }
-  else if (b.dataset.act === "ren"){ const n = prompt("Tên tủ / thiết bị:", d.name); if (n){ d.name = n.trim(); const note = prompt("Ghi chú (tùy chọn):", d.note || ""); if (note != null) d.note = note; lib.save(a); } }
-  else if (b.dataset.act === "del"){ if (confirm("Xóa " + d.name + " khỏi thư viện?")) lib.save(a.filter(x => x.id !== id)); }
+$("libList").onclick = async e => {
+  const card = e.target.closest(".dev-card"); if (!card) return;
+  const a = lib.all(); const d = a.find(x => x.id === card.dataset.id); if (!d) return;
+  const act = await dialog({title: d.name, html: cfgCard(d, d.name, "Đọc lúc " + fmtTime(d.readAt)) + (d.note ? `<div class="help" style="margin-top:10px;color:var(--text-2);font-size:12.5px">${esc(d.note)}</div>` : ""),
+    actions:[{text:"Xóa", cls:"danger", value:"del"},{text:"Đổi tên", cls:"ghost", value:"ren"},{text:"Dùng làm nguồn", value:"use"}]});
+  if (act === "use"){ setSource(d, d.name); showTab("clone"); toast("Đã chọn " + d.name + " làm nguồn", "ok"); }
+  else if (act === "ren"){ const n = await uiPrompt("Đổi tên tủ", "Tên tủ", d.name); if (n && n.trim()){ d.name = n.trim(); lib.save(a); } }
+  else if (act === "del"){ if (await uiConfirm("Xóa tủ?", `Xóa <b>${esc(d.name)}</b> (port ${esc(d.port)}) khỏi thư viện?`, "Xóa", "danger")){ lib.save(a.filter(x => x.id !== d.id)); toast("Đã xóa"); } }
 };
 $("btnExport").onclick = () => {
-  const blob = new Blob([JSON.stringify({app:"modem-kntt", version:1, exportedAt:new Date().toISOString(), devices: lib.all()}, null, 2)], {type:"application/json"});
+  const list = lib.all(); if (!list.length) return toast("Thư viện đang trống");
+  const blob = new Blob([JSON.stringify({app:"modem-minh-sang", version:1, exportedAt:new Date().toISOString(), devices:list}, null, 2)], {type:"application/json"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = "modem-kntt-" + new Date().toISOString().slice(0,10) + ".json"; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  a.download = "modem-minh-sang-" + new Date().toISOString().slice(0,10) + ".json"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000); toast("Đã xuất " + list.length + " tủ", "ok");
 };
 $("btnImport").onclick = () => $("fileImport").click();
 $("fileImport").onchange = async e => {
@@ -599,36 +907,41 @@ $("fileImport").onchange = async e => {
         proto: d.proto === "UDP" ? "UDP" : "TCP", host: String(d.host), port: String(d.port), enc: d.enc === "Tat" ? "Tat" : "Bat", pw: String(d.pw||""), readAt: d.readAt || new Date().toISOString()};
       const i = a.findIndex(x => x.name === clean.name); if (i >= 0) a[i] = clean; else a.push(clean); n++;
     }
-    lib.save(a); alert("Đã nhập " + n + " thiết bị");
-  }catch(err){ alert("Không nhập được: " + err.message); }
+    lib.save(a); toast("Đã nhập " + n + " tủ", "ok");
+  }catch(err){ uiAlert("Không nhập được", esc(err.message)); }
 };
 
-/* ============ Sao chép: cũ → mới ============ */
-let source = null, sourceName = "";
+/* ============ Sao chép ============ */
 function setSource(cfg, name){
   source = {proto:cfg.proto, host:cfg.host, port:String(cfg.port), enc:cfg.enc, pw:cfg.pw || ""}; sourceName = name || "";
   store.set("lastSource", {cfg: source, name: sourceName});
-  $("srcBox").innerHTML = `<div class="src"><b>Nguồn sao chép:</b> ${esc(sourceName || ("Port " + source.port))}${cfgTable(source)}</div>`;
+  $("srcBox").innerHTML = cfgCard(source, sourceName, "Nguồn sao chép");
+  $("srcTag").classList.remove("hidden");
   $("cmpBox").innerHTML = ""; $("steps").innerHTML = "";
   fillEdit(source, sourceName);
   refreshButtons();
 }
-/* ---- Sửa thông số trước khi nạp ---- */
+$("btnPickLib").onclick = () => { showTab("lib"); if (!lib.all().length) toast("Thư viện đang trống – dùng tab Cài tay để nhập thông số"); };
+
+/* -- seg control -- */
+function segVal(id){ return $(id).querySelector("button.on").dataset.v; }
+function segSet(id, v){ $(id).querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === v)); }
+function segBind(id, cb){ $(id).addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; segSet(id, b.dataset.v); cb && cb(); }); }
+
+/* -- sửa thông số -- */
 let ePrevPort = "";
+$("editToggle").onclick = () => { $("editToggle").classList.toggle("open"); $("editPanel").classList.toggle("open"); };
 function fillEdit(c, name){
-  $("eName").value = name || ""; $("eProto").value = c.proto; $("ePort").value = c.port; $("eHost").value = c.host;
-  $("eEnc").value = c.enc === "Tat" ? "Tat" : "Bat"; $("ePw").value = c.pw || ""; ePrevPort = String(c.port);
-  $("ePwBox").style.visibility = $("eEnc").value === "Bat" ? "visible" : "hidden";
+  $("eName").value = name || ""; segSet("eProtoSeg", c.proto); $("ePort").value = c.port; $("eHost").value = c.host;
+  segSet("eEncSeg", c.enc === "Tat" ? "Tat" : "Bat"); $("ePw").value = c.pw || ""; ePrevPort = String(c.port);
+  $("ePwBox").style.visibility = segVal("eEncSeg") === "Bat" ? "visible" : "hidden";
   updateDiff();
 }
-function editCfg(){
-  return {proto:$("eProto").value, host:$("eHost").value.trim(), port:$("ePort").value.trim(), enc:$("eEnc").value, pw:$("ePw").value.trim()};
-}
-function targetCfg(){
-  const c = editCfg();
-  if (!/^\d{2,5}$/.test(c.port)) { alert("Port không hợp lệ"); return null; }
-  if (!c.host || /["\s,]/.test(c.host)) { alert("Địa chỉ server không hợp lệ"); return null; }
-  if (c.enc === "Bat"){ if (!c.pw) c.pw = pwFor(c.port); if (c.pw.length > 8 || /"/.test(c.pw)) { alert("Password 1–8 ký tự, không chứa dấu \""); return null; } }
+const editCfg = () => ({proto:segVal("eProtoSeg"), host:$("eHost").value.trim(), port:$("ePort").value.trim(), enc:segVal("eEncSeg"), pw:$("ePw").value.trim()});
+function validCfg(c){
+  if (!/^\d{2,5}$/.test(c.port)) { uiAlert("Port không hợp lệ", "Port là số, tối đa 5 chữ số."); return null; }
+  if (!c.host || /["\s,]/.test(c.host)) { uiAlert("Server không hợp lệ", "Nhập IP hoặc tên miền, không có dấu cách, dấu phẩy hay dấu nháy."); return null; }
+  if (c.enc === "Bat"){ if (!c.pw) c.pw = pwFor(c.port); if (c.pw.length > 8 || /"/.test(c.pw)) { uiAlert("Password không hợp lệ", "Password 1–8 ký tự, không chứa dấu \"."); return null; } }
   else c.pw = "";
   return c;
 }
@@ -638,9 +951,9 @@ function updateDiff(){
   const name = $("eName").value.trim();
   const other = lib.all().find(d => String(d.port) === t.port && d.name !== name && d.name !== sourceName);
   let h = same
-    ? `<div class="note" style="background:#eef5fc;border:1px solid #c6dcf2;border-radius:8px;padding:8px;margin-bottom:10px">Nạp <b>giống hệt</b> module cũ – dùng khi <b>thay module hỏng trong cùng tủ</b>. Tháo/tắt module cũ: không để 2 module cùng port ${esc(t.port)} chạy cùng lúc.</div>`
-    : `<div class="warn">Nạp cấu hình <b>KHÁC</b> module cũ: port <b>${esc(t.port)}</b>, server ${esc(t.host)}. Port này phải đúng port đã đăng ký cho tủ trên máy chủ và chưa có module nào khác dùng.</div>`;
-  if (other) h += `<div class="warn">⚠️ Port ${esc(t.port)} đang được <b>${esc(other.name)}</b> dùng (theo thư viện). Hai tủ trùng port sẽ không kết nối được.</div>`;
+    ? hint("info", `Nạp <b>giống hệt</b> module cũ, dùng khi thay module hỏng trong cùng tủ. Tháo/tắt module cũ: không để 2 module cùng port <b class="mono">${esc(t.port)}</b> chạy cùng lúc.`)
+    : hint("warn", `Nạp cấu hình <b>khác</b> module cũ: port <b class="mono">${esc(t.port)}</b>, server <span class="mono">${esc(t.host)}</span>. Port phải đúng port đã đăng ký cho tủ trên máy chủ.`);
+  if (other) h += `<div class="hint bad">${icon("i-warn")}<div>Port <b class="mono">${esc(t.port)}</b> đang được <b>${esc(other.name)}</b> dùng. Hai tủ trùng port sẽ không kết nối được.</div></div>`;
   box.innerHTML = h;
 }
 $("ePort").addEventListener("input", () => {
@@ -654,49 +967,59 @@ $("ePort").addEventListener("input", () => {
   updateDiff();
 });
 ["eName","eHost","ePw"].forEach(id => $(id).addEventListener("input", updateDiff));
-["eProto","eEnc"].forEach(id => $(id).addEventListener("change", () => { $("ePwBox").style.visibility = $("eEnc").value === "Bat" ? "visible" : "hidden"; if ($("eEnc").value === "Bat" && !$("ePw").value.trim()) $("ePw").value = pwFor($("ePort").value.trim()); updateDiff(); }));
+segBind("eProtoSeg", updateDiff);
+segBind("eEncSeg", () => { const on = segVal("eEncSeg") === "Bat"; $("ePwBox").style.visibility = on ? "visible" : "hidden"; if (on && !$("ePw").value.trim()) $("ePw").value = pwFor($("ePort").value.trim()); updateDiff(); });
 $("btnResetEdit").onclick = () => { if (source) fillEdit(source, sourceName); };
+
 $("btnReadOld").onclick = async () => {
   if (busy) return; await busyOn();
   try{
     const c = await readParams();
-    if (!c){ $("srcBox").innerHTML = "<div class='fail'>Không đọc được module cũ. Kiểm tra cáp, nguồn module, rồi thử lại.</div>"; return; }
-    if (c.enc === "Bat" && !c.pw) alert("Module không trả về password – hãy nhập password ở tab Cài tay nếu cần.");
-    const name = prompt("Đặt tên để lưu vào thư viện (vd: tên tủ):", "Tủ port " + c.port) || ("Tủ port " + c.port);
-    upsertDevice(c, name.trim());
-    setSource(c, name.trim());
+    if (!c){ $("srcBox").innerHTML = resultBox(false, "Không đọc được module", "Kiểm tra cáp, nguồn module rồi thử lại. Xem chi tiết ở tab Terminal."); return; }
+    busyOff();
+    const old = lib.all().find(d => String(d.port) === c.port);
+    const n = await uiPrompt("Lưu vào thư viện", "Tên tủ", old ? old.name : "Tủ port " + c.port, `Đọc được: <span class="mono">${esc(cfgLine(c))}</span>`);
+    const name = (n && n.trim()) || (old ? old.name : "Tủ port " + c.port);
+    upsertDevice(c, name); setSource(c, name);
+    if (c.enc === "Bat" && !c.pw) toast("Module không trả về password – kiểm tra ở phần Sửa thông số", "err");
+    else toast("Đã đọc " + name, "ok");
     sys("Đã đọc module cũ: " + cfgLine(c));
-  }catch(e){ alert(e.message); } finally{ busyOff(); }
+  }catch(e){ toast(e.message, "err"); } finally{ if (busy) busyOff(); }
 };
+
 $("btnWriteNew").onclick = async () => {
   if (busy || !source) return;
-  const target = targetCfg(); if (!target) return;
+  const target = validCfg(editCfg()); if (!target) return;
   const tName = $("eName").value.trim() || ("Tủ port " + target.port);
   const edited = !sameCfg(target, source);
-  if (!confirm("Nạp cấu hình\n" + cfgLine(target) + (target.enc === "Bat" ? "\nMã hóa: Bật, password " + target.pw : "\nMã hóa: Tắt") + "\nvào module đang cắm cáp?\n\n(Đã chuyển đầu DB9 sang module MỚI chưa?)")) return;
+  if (!await uiConfirm("Nạp vào module mới?", cfgCard(target, tName, edited ? "Đã sửa so với module cũ" : "Giống module cũ") +
+      hint("warn", "Đã chuyển đầu DB9 sang <b>module mới</b> chưa?"), "Nạp ngay", "new")) return;
   await busyOn(); $("cmpBox").innerHTML = "";
   try{
-    // Chống nhầm: nếu module đang cắm đã có đúng cấu hình nguồn → có thể chưa chuyển cáp
     const cur = await readParams();
     if (cur && sameCfg(cur, target)){
-      if (!confirm("Module đang cắm ĐÃ có cấu hình giống hệt nguồn.\nCó thể bạn vẫn đang cắm vào module cũ.\n\nVẫn ghi lại?")){ $("cmpBox").innerHTML = "<div class='done'>Module này đã đúng cấu hình – không cần nạp.</div>"; return; }
+      busyOff();
+      const again = await uiConfirm("Module này đã đúng cấu hình", "Module đang cắm <b>đã có cấu hình giống hệt</b>. Có thể bạn vẫn đang cắm vào module cũ.<br><br>Vẫn ghi lại?", "Vẫn ghi");
+      if (!again){ $("cmpBox").innerHTML = resultBox(true, "Không cần nạp", "Module này đã đúng cấu hình."); return; }
+      await busyOn();
     }
     const after = await writeConfig(target, $("steps"));
     const ok = sameCfg(after, target);
-    $("cmpBox").innerHTML = cfgTable(target, after, "Cần nạp", "Module mới") +
-      (ok ? "<div class='done'>✔ Nạp thành công" + (edited ? " cho " + esc(tName) + " (port " + esc(target.port) + ")" : " – module mới giống module cũ") + ". Lắp vào tủ, chờ đèn Online chớp nhanh và kiểm tra Connected trên máy chủ.</div>"
-          : "<div class='fail'>✗ Thông số đọc lại chưa khớp. Bấm nạp lại hoặc xem tab Terminal.</div>");
+    $("cmpBox").innerHTML = cmpTable(target, after || {}, "Cần nạp", "Module mới") +
+      (ok ? resultBox(true, "Nạp thành công" + (edited ? " · " + esc(tName) : ""), "Lắp module vào tủ, chờ đèn Online chớp nhanh và kiểm tra <b>Connected</b> trên máy chủ.")
+          : resultBox(false, "Thông số chưa khớp", "Bấm nạp lại hoặc xem tab Terminal."));
     if (ok){
       const stamp = "Đã nạp module mới " + fmtTime(new Date().toISOString());
-      if (edited || tName !== sourceName){ upsertDevice(target, tName, stamp); }
-      else { const a = lib.all(); const d = a.find(x => x.name === sourceName);
-        if (d){ d.note = ((d.note ? d.note + " · " : "") + stamp).slice(-300); lib.save(a); } }
+      if (edited || tName !== sourceName) upsertDevice(target, tName, stamp);
+      else { const a = lib.all(); const d = a.find(x => x.name === sourceName); if (d){ d.note = ((d.note ? d.note + " · " : "") + stamp).slice(-300); lib.save(a); } }
       try{ navigator.vibrate?.([80,60,80]); }catch(e){}
+      toast("Nạp thành công", "ok");
     }
+    $("cmpBox").scrollIntoView({behavior:"smooth", block:"nearest"});
   }catch(e){
     sys("Dừng ở bước: " + e.message);
-    $("cmpBox").innerHTML = `<div class='fail'>Module không phản hồi ở bước: ${esc(e.message)}.<br>Ngắt kết nối → kết nối lại → nạp lại (module có thời gian chờ ngắn).</div>`;
-  }finally{ busyOff(); }
+    $("cmpBox").innerHTML = resultBox(false, "Module không phản hồi", "Dừng ở bước: <b>" + esc(e.message) + "</b>.<br>Bấm Ngắt → Kết nối lại rồi nạp lại (module chỉ chờ trong thời gian ngắn).");
+  }finally{ if (busy) busyOff(); }
 };
 
 /* ============ Cài tay ============ */
@@ -705,61 +1028,71 @@ $("mHost").addEventListener("input", () => hostTouched = true);
 $("mPort").addEventListener("input", () => {
   const p = $("mPort").value.trim();
   if (!hostTouched && /^\d{5}$/.test(p)) $("mHost").value = hostFor(p, "");
-  $("mPw").placeholder = p ? pwFor(p) : "T + 4 số cuối port";
+  $("mPw").placeholder = /^\d{4,5}$/.test(p) ? pwFor(p) : "T9981";
 });
-$("mEnc").onchange = () => $("mPwBox").style.visibility = $("mEnc").value === "Bat" ? "visible" : "hidden";
-function manualCfg(){
-  const c = {proto:$("mProto").value, host:$("mHost").value.trim(), port:$("mPort").value.trim(), enc:$("mEnc").value, pw:$("mPw").value.trim()};
-  if (!/^\d{2,5}$/.test(c.port)) { alert("Port không hợp lệ"); return null; }
-  if (!c.host || /["\s,]/.test(c.host)) { alert("Địa chỉ server không hợp lệ"); return null; }
-  if (c.enc === "Bat"){ if (!c.pw) c.pw = pwFor(c.port); if (c.pw.length > 8 || /"/.test(c.pw)) { alert("Password 1–8 ký tự, không chứa dấu \""); return null; } }
-  return c;
-}
-$("btnManualSrc").onclick = () => { const c = manualCfg(); if (!c) return; setSource(c, "Nhập tay port " + c.port); showTab("clone"); };
+segBind("mProtoSeg");
+segBind("mEncSeg", () => $("mPwBox").style.visibility = segVal("mEncSeg") === "Bat" ? "visible" : "hidden");
+const manualCfg = () => validCfg({proto:segVal("mProtoSeg"), host:$("mHost").value.trim(), port:$("mPort").value.trim(), enc:segVal("mEncSeg"), pw:$("mPw").value.trim()});
+$("btnManualSrc").onclick = () => { const c = manualCfg(); if (!c) return; setSource(c, "Nhập tay port " + c.port); showTab("clone"); toast("Đã đặt làm nguồn sao chép", "ok"); };
 $("btnManualWrite").onclick = async () => {
   const c = manualCfg(); if (!c || busy) return;
+  if (!await uiConfirm("Ghi vào module?", cfgCard(c, "Port " + c.port), "Ghi", "new")) return;
   await busyOn(); $("mCmp").innerHTML = "";
   try{
     const after = await writeConfig(c, $("mSteps"));
-    $("mCmp").innerHTML = cfgTable(c, after, "Cần ghi", "Đọc lại") + (sameCfg(after, c) ? "<div class='done'>✔ Ghi thành công</div>" : "<div class='fail'>✗ Chưa khớp</div>");
-  }catch(e){ $("mCmp").innerHTML = `<div class='fail'>Dừng ở bước: ${esc(e.message)}</div>`; }
+    const ok = sameCfg(after, c);
+    $("mCmp").innerHTML = cmpTable(c, after || {}, "Cần ghi", "Đọc lại") + (ok ? resultBox(true, "Ghi thành công", "") : resultBox(false, "Chưa khớp", "Ghi lại hoặc xem Terminal."));
+    if (ok) toast("Ghi thành công", "ok");
+  }catch(e){ $("mCmp").innerHTML = resultBox(false, "Module không phản hồi", "Dừng ở bước: " + esc(e.message)); }
   finally{ busyOff(); }
 };
 $("btnReadAny").onclick = async () => {
   if (busy) return; await busyOn();
-  try{ const c = await readParams(); $("anyBox").innerHTML = c ? cfgTable(c) + `<div class="row" style="margin-top:8px"><button class="sm" id="anySave">Lưu vào thư viện</button></div>` : "<div class='fail'>Không đọc được</div>";
-       if (c) $("anySave").onclick = () => { const n = prompt("Tên:", "Tủ port " + c.port); if (n) upsertDevice(c, n.trim()); }; }
-  catch(e){ alert(e.message); } finally{ busyOff(); }
+  try{
+    const c = await readParams();
+    $("anyBox").innerHTML = c ? cfgCard(c, "Module đang cắm") + `<button class="link-btn" id="anySave">Lưu vào thư viện</button>` : resultBox(false, "Không đọc được", "Kiểm tra cáp và nguồn module.");
+    if (c) $("anySave").onclick = async () => { const n = await uiPrompt("Lưu vào thư viện", "Tên tủ", "Tủ port " + c.port); if (n && n.trim()){ upsertDevice(c, n.trim()); toast("Đã lưu", "ok"); } };
+  }catch(e){ toast(e.message, "err"); } finally{ busyOff(); }
 };
 $("btnReboot").onclick = async () => {
-  if (busy || !confirm("Khởi động lại module?")) return; await busyOn();
-  try{ if (await openMenu()){ await send("3"); sys("Đã gửi lệnh khởi động lại"); } else alert("Module không phản hồi"); }
-  catch(e){ alert(e.message); } finally{ busyOff(); }
+  if (busy || !await uiConfirm("Khởi động lại module?", "Module sẽ khởi động lại và kết nối lại trung tâm.", "Khởi động lại")) return;
+  await busyOn();
+  try{ if (await openMenu()){ await send("3"); sys("Đã gửi lệnh khởi động lại"); toast("Đã gửi lệnh khởi động lại", "ok"); } else toast("Module không phản hồi", "err"); }
+  catch(e){ toast(e.message, "err"); } finally{ busyOff(); }
 };
 
-/* ============ Tab & khởi động ============ */
+/* ============ Tab, hướng dẫn, khởi động ============ */
 function showTab(t){
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("act", b.dataset.tab === t));
-  ["clone","lib","manual","term"].forEach(x => $("pane-" + x).classList.toggle("hidden", x !== t));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + t));
   window.scrollTo(0,0);
+  if (t === "term") term.scrollTop = term.scrollHeight;
 }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+function openHelp(){ openScrim($("help")); $("help").querySelector(".modal-sheet").scrollTop = 0; history.pushState({help:1}, ""); }
+function closeHelp(){ if (!$("help").classList.contains("show")) return; closeScrim($("help")); }
+$("btnHelp").onclick = openHelp;
+$("help").addEventListener("click", e => { if (e.target.id === "help" || e.target.closest("[data-close]")){ if (history.state && history.state.help) history.back(); else closeHelp(); } });
+window.addEventListener("popstate", () => { closeHelp(); if ($("dlg").classList.contains("show")) finishDlg(null); });
+
 ["baud","eol"].forEach(id => { const v = store.get("opt_"+id, null); if (v != null) $(id).value = v; $(id).addEventListener("change", () => store.set("opt_"+id, $(id).value)); });
 const ls = store.get("lastSource", null); if (ls && ls.cfg) setSource(ls.cfg, ls.name);
 renderLib(); refreshButtons();
 
 if (!("usb" in navigator) && !("serial" in navigator)){
-  const w = $("nosupport"); w.classList.remove("hidden");
-  w.innerHTML = /iPhone|iPad/i.test(navigator.userAgent) ? "iPhone/iPad không cho truy cập cổng USB. Hãy dùng điện thoại <b>Android + Chrome</b>."
-    : (!isSecureContext ? "Trang phải mở qua <b>https://</b> (vd: GitHub Pages) thì mới dùng được USB." : "Trình duyệt này không hỗ trợ USB. Hãy mở bằng <b>Chrome trên Android</b>.");
+  const w = $("nosupport"); w.classList.add("show");
+  w.innerHTML = /iPhone|iPad/i.test(navigator.userAgent) ? "<b>iPhone/iPad không hỗ trợ.</b> Trình duyệt trên iOS không cho truy cập cổng USB. Hãy dùng điện thoại Android + Chrome."
+    : (!isSecureContext ? "<b>Cần mở qua https://</b> (vd GitHub Pages) thì mới dùng được cổng USB."
+                        : "<b>Trình duyệt chưa hỗ trợ USB.</b> Hãy mở bằng Chrome trên Android.");
   $("btnConn").disabled = true;
 }
+if (!store.get("helpSeen", false)){ store.set("helpSeen", true); openHelp(); }
 
-/* Cài đặt như app (PWA) */
 let installEvt = null;
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; $("btnInstall").classList.remove("hidden"); });
 $("btnInstall").onclick = async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; $("btnInstall").classList.add("hidden"); };
-window.addEventListener("appinstalled", () => $("btnInstall").classList.add("hidden"));
+window.addEventListener("appinstalled", () => { $("btnInstall").classList.add("hidden"); toast("Đã cài app", "ok"); });
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
