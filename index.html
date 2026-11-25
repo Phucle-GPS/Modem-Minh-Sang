@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f3d5e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Modem KNTT – Sao chép cấu hình</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#17202a;--mute:#5d6b78;--pri:#0f6cbd;--pri2:#0f3d5e;--ok:#1a7f37;--err:#c62828;--line:#dde3ea;--old:#8a5a00;--new:#0b6b3a}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;padding-bottom:70px}
+header{background:var(--pri2);color:#fff;padding:12px 14px;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
+header h1{font-size:16px;margin:0;flex:1;line-height:1.25}
+header small{display:block;font-weight:400;opacity:.75;font-size:12px}
+header button{padding:7px 10px;font-size:13px;background:#ffffff22;color:#fff;border-color:#ffffff44}
+.dot{width:12px;height:12px;border-radius:50%;background:#9aa5b1;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+.dot.on{background:#3ddc84}
+main{padding:12px;max-width:720px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.card h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.04em;color:var(--pri2);display:flex;align-items:center;gap:8px}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;color:#fff;letter-spacing:0}
+.badge.old{background:var(--old)}.badge.new{background:var(--new)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 auto}
+label{font-size:12px;color:var(--mute);display:block;margin:8px 0 4px}
+input,select{width:100%;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+button{font-size:15px;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600;cursor:pointer}
+button.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+button.okb{background:var(--new);border-color:var(--new);color:#fff}
+button.oldb{background:var(--old);border-color:var(--old);color:#fff}
+button.big{width:100%;padding:14px;font-size:16px}
+button.sm{padding:7px 10px;font-size:13px;flex:0 0 auto}
+button:disabled{opacity:.45}
+.qbtn{flex:1 1 22%;min-width:70px}
+#term{background:#0d1117;color:#c9d1d9;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;height:300px;overflow:auto;border-radius:8px;padding:8px;white-space:pre-wrap;word-break:break-all}
+#term .tx{color:#79c0ff}#term .sys{color:#d29922}#term .er{color:#ff7b72}
+.steps{list-style:none;margin:8px 0 0;padding:0}
+.steps li{padding:5px 0 5px 26px;position:relative;color:var(--mute);font-size:14px}
+.steps li:before{content:"";position:absolute;left:4px;top:8px;width:12px;height:12px;border-radius:50%;border:2px solid #b8c2cc}
+.steps li.run{color:var(--ink);font-weight:600}.steps li.run:before{border-color:var(--pri);border-top-color:transparent;animation:sp .8s linear infinite}
+.steps li.ok{color:var(--ok)}.steps li.ok:before{background:var(--ok);border-color:var(--ok)}
+.steps li.bad{color:var(--err)}.steps li.bad:before{background:var(--err);border-color:var(--err)}
+@keyframes sp{to{transform:rotate(360deg)}}
+table.cfg{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+table.cfg th,table.cfg td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top;word-break:break-all}
+table.cfg th{color:var(--mute);font-weight:500;width:32%}
+table.cfg td.y{color:var(--ok);font-weight:600}table.cfg td.n{color:var(--err);font-weight:600}
+.empty{color:var(--mute);font-size:14px;padding:6px 0}
+.note{font-size:13px;color:var(--mute);line-height:1.45}
+.warn{background:#fff6e5;border:1px solid #f3d29b;color:#7a4b00;border-radius:8px;padding:10px;font-size:13px;line-height:1.45;margin-bottom:12px}
+.done{background:#e8f6ed;border:1px solid #9fd5b1;color:#0b5a2c;border-radius:8px;padding:10px;font-weight:600;margin-top:10px}
+.fail{background:#fdecec;border:1px solid #f2b8b5;color:#8c1d18;border-radius:8px;padding:10px;font-weight:600;margin-top:10px}
+.hint{font-size:12px;color:var(--mute);margin-top:4px;line-height:1.4}
+details summary{cursor:pointer;font-weight:600;color:var(--pri2)}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:6;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;border-radius:0;background:none;padding:9px 2px 8px;font-size:12px;font-weight:600;color:var(--mute)}
+nav button span{display:block;font-size:20px;line-height:1.1}
+nav button.act{color:var(--pri)}
+.hidden{display:none!important}
+.dev{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
+.dev .t{font-weight:700}.dev .s{font-size:13px;color:var(--mute);margin:2px 0 8px;word-break:break-all}
+.src{border:2px dashed var(--old);border-radius:10px;padding:8px 10px;margin-top:8px;background:#fffaf0}
+</style>
+</head>
+<body>
+<header>
+  <span class="dot" id="dot"></span>
+  <h1>Modem kết nối trung tâm<small id="status">Chưa kết nối cáp</small></h1>
+  <button id="btnInstall" class="hidden">📲 Cài app</button>
+</header>
+<main>
+<div class="warn hidden" id="nosupport"></div>
+
+<!-- ===== Kết nối ===== -->
+<div class="card">
+  <button class="pri big" id="btnConn">🔌 Kết nối cáp USB</button>
+  <div class="hint" id="devinfo">Cáp USB‑C → RS232 cắm vào điện thoại, đầu DB9 cắm vào module (đã cấp nguồn).</div>
+  <details style="margin-top:8px"><summary>Tùy chọn cổng</summary>
+    <div class="row">
+      <div style="flex:1 1 40%"><label>Tốc độ (baud)</label>
+        <select id="baud"><option>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></div>
+      <div style="flex:1 1 40%"><label>Ký tự kết thúc khi gửi</label>
+        <select id="eol"><option value="auto">Tự dò</option><option value="">Không (như AccessPort)</option><option value="\r">CR</option><option value="\r\n">CR+LF</option><option value="\n">LF</option></select></div>
+    </div>
+  </details>
+</div>
+
+<!-- ===== TAB SAO CHÉP ===== -->
+<section id="pane-clone">
+  <div class="card">
+    <h2><span class="badge old">BƯỚC 1</span> Đọc module CŨ</h2>
+    <button class="oldb big" id="btnReadOld" disabled>📖 Đọc thông số module cũ</button>
+    <div class="hint">Module cũ hỏng, không đọc được? Chọn thông số đã lưu ở tab <b>Thư viện</b>.</div>
+    <div id="srcBox"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="badge new">BƯỚC 2</span> Nạp module MỚI</h2>
+    <p class="note" style="margin-top:0">Giữ nguyên cáp ở điện thoại. Rút đầu DB9 khỏi module cũ → cắm sang module mới → cấp nguồn module mới → bấm nạp.</p>
+    <details id="editBox" style="margin-bottom:10px"><summary>✏️ Sửa thông số trước khi nạp (lắp cho tủ khác)</summary>
+      <label>Tên tủ (chỉ lưu trong app – module không chứa tên tủ)</label>
+      <input id="eName" placeholder="vd: Tủ Mê Linh 02">
+      <div class="row">
+        <div style="flex:1 1 30%"><label>Giao thức</label><select id="eProto"><option>TCP</option><option>UDP</option></select></div>
+        <div style="flex:1 1 60%"><label>Port đã chuyển đổi</label><input id="ePort" inputmode="numeric"></div>
+      </div>
+      <label>Địa chỉ server</label>
+      <input id="eHost" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <div class="row">
+        <div style="flex:1 1 40%"><label>Mã hóa</label><select id="eEnc"><option value="Bat">Bật</option><option value="Tat">Tắt</option></select></div>
+        <div style="flex:1 1 50%" id="ePwBox"><label>Password (1–8 ký tự)</label><input id="ePw" maxlength="8" autocapitalize="off"></div>
+      </div>
+      <div class="hint">Đổi Port → app tự đổi theo quy ước: server <b>hcm**.lirecon.com</b> (** = 2 số sau số đầu của port) và password <b>T + 4 số cuối port</b>. Vẫn sửa tay được.</div>
+      <div class="row" style="margin-top:8px"><button class="sm" id="btnResetEdit">↩️ Trả về giống module cũ</button></div>
+    </details>
+    <div id="diffNote"></div>
+    <button class="okb big" id="btnWriteNew" disabled>⬇️ Nạp vào module mới</button>
+    <ul class="steps" id="steps"></ul>
+    <div id="cmpBox"></div>
+  </div>
+</section>
+
+<!-- ===== TAB THƯ VIỆN ===== -->
+<section id="pane-lib" class="hidden">
+  <div class="card">
+    <h2>Thư viện thiết bị</h2>
+    <input id="libSearch" placeholder="Tìm theo tên tủ, port, server…">
+    <div id="libList" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:6px">
+      <button id="btnExport">⤴️ Xuất file</button>
+      <button id="btnImport">⤵️ Nhập file</button>
+      <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
+    </div>
+    <p class="note">Mỗi lần đọc module cũ, thông số được lưu ở đây. Xuất file .json để sao lưu hoặc chuyển sang điện thoại của anh em trong đội.</p>
+  </div>
+</section>
+
+<!-- ===== TAB CÀI TAY ===== -->
+<section id="pane-manual" class="hidden">
+  <div class="card">
+    <h2>Cài tay thông số</h2>
+    <div class="row">
+      <div style="flex:1 1 30%"><label>Giao thức</label><select id="mProto"><option>TCP</option><option>UDP</option></select></div>
+      <div style="flex:1 1 60%"><label>Port đã chuyển đổi</label><input id="mPort" inputmode="numeric" placeholder="vd: 19981"></div>
+    </div>
+    <label>Địa chỉ server (IP hoặc DNS)</label>
+    <input id="mHost" placeholder="hcm99.lirecon.com" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <div class="hint">Gợi ý tự động "hcm**.lirecon.com" theo mã đầu của Port – sửa tay nếu khác.</div>
+    <div class="row">
+      <div style="flex:1 1 40%"><label>Mã hóa đường truyền</label><select id="mEnc"><option value="Bat">Bật</option><option value="Tat">Tắt</option></select></div>
+      <div style="flex:1 1 50%" id="mPwBox"><label>Password (1–8 ký tự)</label><input id="mPw" maxlength="8" placeholder="T + 4 số cuối port" autocapitalize="off"></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="pri" id="btnManualWrite" disabled>⬇️ Ghi vào module</button>
+      <button id="btnManualSrc">Dùng làm nguồn sao chép</button>
+    </div>
+    <ul class="steps" id="mSteps"></ul>
+    <div id="mCmp"></div>
+  </div>
+  <div class="card">
+    <h2>Khác</h2>
+    <div class="row"><button id="btnReadAny" disabled>📖 Đọc thông số</button><button id="btnReboot" disabled>🔄 Khởi động lại module</button></div>
+    <div id="anyBox"></div>
+  </div>
+</section>
+
+<!-- ===== TAB TERMINAL ===== -->
+<section id="pane-term" class="hidden">
+  <div class="card">
+    <h2>Terminal</h2>
+    <div id="term"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="qbtn" data-send="hi">hi</button><button class="qbtn" data-send="1">1</button>
+      <button class="qbtn" data-send="2">2</button><button class="qbtn" data-send="3">3</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <input id="txt" placeholder="Nhập lệnh…" autocapitalize="off" autocorrect="off" spellcheck="false" style="flex:1 1 60%">
+      <button class="pri" id="btnSend" style="flex:0 0 auto">Gửi</button>
+    </div>
+    <div class="row" style="margin-top:8px"><button id="btnClear">Xóa màn hình</button><button id="btnCopy">Sao chép log</button></div>
+  </div>
+  <div class="card"><details><summary>Cáp cần dùng</summary><div class="note" style="margin-top:8px">
+    • Cáp <b>USB‑C → RS232 DB9</b> (chip CH340 / FTDI / CP2102 / PL2303), loại RS232 – không phải TTL.<br>
+    • Hoặc cáp <b>USB → RS232 CH340</b> + <b>đầu OTG USB‑C → USB‑A</b>.<br>
+    • Thêm <b>đầu đổi giới tính DB9</b> nếu hai đầu cùng loại.<br>
+    • Điện thoại Android có OTG, dùng Chrome. iPhone không hỗ trợ.</div></details></div>
+</section>
+</main>
+
+<nav>
+  <button data-tab="clone" class="act"><span>🔁</span>Sao chép</button>
+  <button data-tab="lib"><span>🗂️</span>Thư viện</button>
+  <button data-tab="manual"><span>⚙️</span>Cài tay</button>
+  <button data-tab="term"><span>⌨️</span>Terminal</button>
+</nav>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const enc = new TextEncoder(), dec = new TextDecoder("latin1");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+};
+const unaccent = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+
+/* ============ Terminal ============ */
+let rxAll = "";
+const term = $("term");
+function termAdd(text, cls){
+  const atBottom = term.scrollTop + term.clientHeight >= term.scrollHeight - 30;
+  const span = document.createElement("span"); if (cls) span.className = cls; span.textContent = text;
+  term.appendChild(span); if (term.childNodes.length > 3000) term.removeChild(term.firstChild);
+  if (atBottom) term.scrollTop = term.scrollHeight;
+}
+const sys = t => termAdd("\n[" + t + "]\n", "sys");
+
+/* ============ Driver USB-Serial qua WebUSB ============ */
+const KNOWN = [
+  {vendorId:0x1a86}, // QinHeng CH340/CH341
+  {vendorId:0x0403}, // FTDI
+  {vendorId:0x10c4}, // Silicon Labs CP210x
+  {vendorId:0x067b}, // Prolific PL2303
+  {classCode:0x02},  // CDC-ACM
+];
+
+class UsbSerial {
+  constructor(dev){ this.dev = dev; this.type = "?"; this.reading = false; }
+  ctrlOut(type, recip, req, value, index, data){
+    return this.dev.controlTransferOut({requestType:type, recipient:recip, request:req, value, index}, data);
+  }
+  ctrlIn(type, recip, req, value, index, len){
+    return this.dev.controlTransferIn({requestType:type, recipient:recip, request:req, value, index}, len);
+  }
+  findEndpoints(ifaceNum){
+    const cfg = this.dev.configuration;
+    for (const itf of cfg.interfaces){
+      if (ifaceNum != null && itf.interfaceNumber !== ifaceNum) continue;
+      const alt = itf.alternate;
+      const i = alt.endpoints.find(e => e.type === "bulk" && e.direction === "in");
+      const o = alt.endpoints.find(e => e.type === "bulk" && e.direction === "out");
+      if (i && o) return {iface: itf.interfaceNumber, epIn: i.endpointNumber, epOut: o.endpointNumber, pkt: i.packetSize || 64};
+    }
+    throw new Error("Không tìm thấy endpoint bulk");
+  }
+  async open(baud){
+    const d = this.dev;
+    await d.open();
+    if (!d.configuration) await d.selectConfiguration(1);
+    const vid = d.vendorId;
+    if (vid === 0x1a86) await this.initCH34x(baud);
+    else if (vid === 0x0403) await this.initFTDI(baud);
+    else if (vid === 0x10c4) await this.initCP210x(baud);
+    else if (vid === 0x067b) await this.initPL2303(baud);
+    else await this.initCDC(baud);
+  }
+  async claim(n){ try{ await this.dev.claimInterface(n); }catch(e){ throw new Error("Không chiếm được cổng USB (interface " + n + "): " + e.message); } }
+
+  /* --- CH340 / CH341 --- */
+  async initCH34x(baud){
+    this.type = "CH340/CH341";
+    const ep = this.findEndpoints(0); Object.assign(this, ep); await this.claim(ep.iface);
+    const out = (r,v,i) => this.ctrlOut("vendor","device",r,v,i);
+    await this.ctrlIn("vendor","device",0x5f,0,0,8);
+    await out(0xa1,0,0);
+    await this.ch34xBaud(baud);
+    await this.ctrlIn("vendor","device",0x95,0x2518,0,8);
+    await out(0x9a,0x2518,0x00c3);          // 8N1, bật RX/TX
+    await this.ctrlIn("vendor","device",0x95,0x0706,0,8);
+    await out(0xa1,0x501f,0xd90a);
+    await this.ch34xBaud(baud);
+    await out(0xa4, (~((1<<5)|(1<<6))) & 0xff, 0); // DTR + RTS bật
+  }
+  async ch34xBaud(baud){
+    let factor = Math.floor(1532620800 / baud), divisor = 3;
+    while (factor > 0xfff0 && divisor > 0){ factor >>= 3; divisor--; }
+    factor = 0x10000 - factor; divisor |= 0x80;
+    await this.ctrlOut("vendor","device",0x9a,0x1312,(factor & 0xff00) | divisor);
+    await this.ctrlOut("vendor","device",0x9a,0x0f2c,factor & 0xff);
+  }
+
+  /* --- FTDI --- */
+  async initFTDI(baud){
+    this.type = "FTDI";
+    const ep = this.findEndpoints(0); Object.assign(this, ep); await this.claim(ep.iface);
+    const idx = ep.iface + 1;
+    const out = (r,v,i) => this.ctrlOut("vendor","device",r,v,i);
+    await out(0x00,0x0000,idx);              // reset
+    const fr = [0,3,2,4,1,5,6,7];
+    const eighths = Math.round(3000000*8/baud);
+    let div = eighths >> 3, f = fr[eighths & 7];
+    if (div === 1 && f === 0) div = 0;         // 3 Mbaud
+    const v = (div | (f << 14)) & 0xffff;
+    const iHi = (f >> 2) << 8;
+    await out(0x03, v, (iHi) | idx);
+    await out(0x04, 0x0008, idx);            // 8N1
+    await out(0x01, 0x0303, idx);            // DTR/RTS
+    this.ftdi = true;
+  }
+
+  /* --- CP210x --- */
+  async initCP210x(baud){
+    this.type = "CP210x";
+    const ep = this.findEndpoints(0); Object.assign(this, ep); await this.claim(ep.iface);
+    const i = ep.iface;
+    await this.ctrlOut("vendor","interface",0x00,0x0001,i);
+    const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, baud, true);
+    await this.ctrlOut("vendor","interface",0x1e,0,i,b);
+    await this.ctrlOut("vendor","interface",0x03,0x0800,i);
+    await this.ctrlOut("vendor","interface",0x07,0x0303,i);
+  }
+
+  /* --- PL2303 (HX) --- */
+  async initPL2303(baud){
+    this.type = "PL2303";
+    const ep = this.findEndpoints(0); Object.assign(this, ep); await this.claim(ep.iface);
+    const vr = v => this.ctrlIn("vendor","device",0x01,v,0,1);
+    const vw = (v,i) => this.ctrlOut("vendor","device",0x01,v,i);
+    if (this.dev.productId !== 0x23a3){
+      try{
+        await vr(0x8484); await vw(0x0404,0); await vr(0x8484); await vr(0x8383);
+        await vr(0x8484); await vw(0x0404,1); await vr(0x8484); await vr(0x8383);
+        await vw(0,1); await vw(1,0); await vw(2,0x44);
+      }catch(e){ /* một số đời chip bỏ qua bước này */ }
+    }
+    await this.lineCoding(baud, 0);
+    await this.ctrlOut("class","interface",0x22,0x0003,0);
+  }
+
+  /* --- CDC-ACM chuẩn --- */
+  async initCDC(baud){
+    this.type = "CDC-ACM";
+    const cfg = this.dev.configuration;
+    const comm = cfg.interfaces.find(i => i.alternate.interfaceClass === 0x02);
+    const data = cfg.interfaces.find(i => i.alternate.interfaceClass === 0x0a);
+    if (!data) throw new Error("Thiết bị không phải USB‑serial được hỗ trợ");
+    if (comm) await this.claim(comm.interfaceNumber);
+    const ep = this.findEndpoints(data.interfaceNumber); Object.assign(this, ep); await this.claim(ep.iface);
+    const ci = comm ? comm.interfaceNumber : 0;
+    await this.lineCoding(baud, ci);
+    await this.ctrlOut("class","interface",0x22,0x0003,ci);
+  }
+  async lineCoding(baud, iface){
+    const lc = new Uint8Array(7); const dv = new DataView(lc.buffer);
+    dv.setUint32(0, baud, true); lc[4]=0; lc[5]=0; lc[6]=8;
+    await this.ctrlOut("class","interface",0x20,0,iface,lc);
+  }
+
+  async write(bytes){ await this.dev.transferOut(this.epOut, bytes); }
+  async readLoop(onData, onEnd){
+    this.reading = true;
+    while (this.reading){
+      try{
+        const r = await this.dev.transferIn(this.epIn, this.pkt * 4);
+        if (r.status === "stall"){ await this.dev.clearHalt("in", this.epIn); continue; }
+        if (!r.data || !r.data.byteLength) continue;
+        let u = new Uint8Array(r.data.buffer, r.data.byteOffset, r.data.byteLength);
+        if (this.ftdi){                        // bỏ 2 byte trạng thái mỗi gói
+          const parts = [];
+          for (let p = 0; p < u.length; p += this.pkt) parts.push(u.subarray(p+2, Math.min(p+this.pkt, u.length)));
+          const n = parts.reduce((a,b)=>a+b.length,0); const m = new Uint8Array(n); let o=0;
+          for (const s of parts){ m.set(s,o); o+=s.length; } u = m;
+        }
+        if (u.length) onData(u);
+      }catch(e){ if (this.reading){ this.reading = false; onEnd(e); } break; }
+    }
+  }
+  async close(){ this.reading = false; try{ await this.dev.close(); }catch(e){} }
+}
+
+/* --- Web Serial gốc (Android 17+/máy tính) --- */
+class NativeSerial {
+  constructor(port){ this.port = port; this.type = "Web Serial"; }
+  async open(baud){ await this.port.open({baudRate:baud, dataBits:8, stopBits:1, parity:"none"}); this.writer = this.port.writable.getWriter(); }
+  async write(b){ await this.writer.write(b); }
+  async readLoop(onData, onEnd){
+    this.reading = true;
+    while (this.reading && this.port.readable){
+      this.reader = this.port.readable.getReader();
+      try{ for(;;){ const {value, done} = await this.reader.read(); if (done) break; if (value) onData(value); } }
+      catch(e){ if (this.reading){ this.reading=false; onEnd(e); return; } }
+      finally{ try{ this.reader.releaseLock(); }catch(e){} }
+    }
+  }
+  async close(){ this.reading=false; try{ await this.reader?.cancel(); }catch(e){} try{ this.writer?.releaseLock(); }catch(e){} try{ await this.port.close(); }catch(e){} }
+}
+
+
+
+/* ============ Kết nối ============ */
+let link = null, busy = false;
+function refreshButtons(){
+  const on = !!link;
+  $("btnConn").disabled = busy;
+  for (const id of ["btnReadOld","btnManualWrite","btnReadAny","btnReboot"]) $(id).disabled = !on || busy;
+  $("btnWriteNew").disabled = !on || busy || !source;
+}
+function setConnected(on, info){
+  $("dot").classList.toggle("on", on);
+  $("status").textContent = on ? ("Đã kết nối · " + info) : "Chưa kết nối cáp";
+  $("btnConn").textContent = on ? "⏏️ Ngắt kết nối" : "🔌 Kết nối cáp USB";
+  $("btnConn").classList.toggle("pri", !on);
+  refreshButtons();
+}
+function onRx(u){ const s = dec.decode(u); rxAll += s; if (rxAll.length > 200000) rxAll = rxAll.slice(-100000); termAdd(s); }
+async function connect(){
+  const baud = +$("baud").value;
+  try{
+    let dev;
+    if ("usb" in navigator){ dev = await navigator.usb.requestDevice({filters: KNOWN}); link = new UsbSerial(dev); }
+    else if ("serial" in navigator){ link = new NativeSerial(await navigator.serial.requestPort()); }
+    else throw new Error("Trình duyệt không hỗ trợ USB");
+    await link.open(baud);
+    setConnected(true, link.type + " " + baud);
+    $("devinfo").textContent = "Cáp: " + (dev ? (dev.productName || "USB") : "Serial") + " (" + link.type + ") · " + baud + " 8‑N‑1";
+    sys("Đã mở cổng " + link.type + " " + baud + " 8N1");
+    link.readLoop(onRx, e => { sys("Mất kết nối: " + e.message); disconnect(); });
+  }catch(e){
+    if (e.name === "NotFoundError") return;
+    termAdd("\n[Lỗi] " + e.message + "\n", "er"); alert("Không kết nối được: " + e.message);
+    try{ await link?.close(); }catch(_){} link = null; setConnected(false);
+  }
+}
+async function disconnect(){ const l = link; link = null; setConnected(false); if (l) await l.close(); }
+$("btnConn").onclick = () => link ? disconnect() : connect();
+if ("usb" in navigator) navigator.usb.addEventListener("disconnect", e => { if (link && link.dev === e.device){ sys("Đã rút cáp USB"); disconnect(); } });
+
+/* ============ Gửi / chờ ============ */
+let eolDetected = store.get("eolDetected", null);
+function currentEol(){ const v = $("eol").value; if (v === "auto") return eolDetected ?? ""; return v.replace(/\\r/g,"\r").replace(/\\n/g,"\n"); }
+async function send(text, eol){
+  if (!link) throw new Error("Chưa kết nối cáp");
+  const e = eol ?? currentEol();
+  termAdd("\n» " + text + (e ? " ⏎" : "") + "\n", "tx");
+  await link.write(enc.encode(text + e));
+}
+async function sendUI(t){ try{ await send(t); }catch(e){ termAdd("\n[Lỗi] " + e.message + "\n","er"); } }
+document.querySelectorAll("[data-send]").forEach(b => b.onclick = () => sendUI(b.dataset.send));
+$("btnSend").onclick = () => { const t = $("txt").value; if (!t) return; sendUI(t); $("txt").value = ""; };
+$("txt").addEventListener("keydown", e => { if (e.key === "Enter") $("btnSend").click(); });
+$("btnClear").onclick = () => { term.textContent = ""; };
+$("btnCopy").onclick = async () => { try{ await navigator.clipboard.writeText(term.textContent); alert("Đã sao chép log"); }catch(e){ alert("Không sao chép được"); } };
+
+const mark = () => rxAll.length;
+async function waitFor(re, from, ms){
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms){
+    if (re.test(unaccent(rxAll.slice(from)))) { await sleep(150); return true; }
+    await sleep(60); if (!link) return false;
+  }
+  return false;
+}
+async function ask(text, re, ms = 3000){
+  for (let k = 0; k < 2; k++){ const m = mark(); await send(text); if (await waitFor(re, m, ms)) return true; }
+  return false;
+}
+const RE_MENU = /muon lam gi|Doc thong so/i;
+async function openMenu(){
+  const sel = $("eol").value;
+  const list = sel === "auto" ? [eolDetected ?? "", "", "\r\n", "\r"].filter((v,i,a)=>a.indexOf(v)===i) : [currentEol()];
+  for (const e of list){
+    const m = mark(); await send("hi", e);
+    if (await waitFor(RE_MENU, m, 2500)){
+      if (sel === "auto" && eolDetected !== e){ eolDetected = e; store.set("eolDetected", e); sys("Tự dò ký tự kết thúc: " + (e ? JSON.stringify(e) : "không có")); }
+      return true;
+    }
+  }
+  return false;
+}
+
+/* ============ Cấu hình: đọc / ghi ============ */
+// cfg = {proto, host, port, enc:"Bat"|"Tat", pw}
+function parseParams(t){
+  t = unaccent(t);
+  const s = t.match(/connection:\s*"?(TCP|UDP)"?\s*,\s*"([^"]+)"\s*,\s*(\d+)/i);
+  if (!s) return null;
+  const e = t.match(/Ma hoa[^:\n]*:\s*(Bat|Tat)/i);
+  const p = t.match(/Password[^:\n]*:\s*"([^"]*)"/i);
+  return {proto:s[1].toUpperCase(), host:s[2].trim(), port:s[3],
+          enc: e ? (/^b/i.test(e[1]) ? "Bat" : "Tat") : "?", pw: p ? p[1] : ""};
+}
+const RE_PARAMS = /Password duong truyen\s*:|Ma hoa du lieu duong truyen\s*:/i;
+async function readParams(){
+  let m = mark(); await send("1");
+  let ok = await waitFor(RE_PARAMS, m, 2000);
+  if (!ok){
+    if (!(await openMenu())) return null;
+    m = mark(); await send("1");
+    ok = await waitFor(RE_PARAMS, m, 3000);
+    if (!ok) return null;
+  }
+  await sleep(500);
+  return parseParams(rxAll.slice(m));
+}
+function sameCfg(a, b){
+  if (!a || !b) return false;
+  return a.proto === b.proto && a.host.toLowerCase() === b.host.toLowerCase() && String(a.port) === String(b.port)
+      && a.enc === b.enc && (a.enc !== "Bat" || a.pw === b.pw);
+}
+const pwFor = port => "T" + String(port).slice(-4);
+function hostFor(port, host){
+  port = String(port);
+  if (!/^\d{5}$/.test(port)) return host;
+  if (!host || /^hcm\d\d\.lirecon\.com$/i.test(host)) return "hcm" + port.slice(1,3) + ".lirecon.com";
+  return host;
+}
+function cfgLine(c){ return `"${c.proto}","${c.host}",${c.port}`; }
+
+function stepList(el, names){ el.innerHTML = ""; return names.map(n => { const li = document.createElement("li"); li.textContent = n; el.appendChild(li); return li; }); }
+
+async function writeConfig(cfg, stepsEl){
+  const encOn = cfg.enc === "Bat";
+  const names = ["Mở menu cài đặt (hi → 2)", "Cài lại Server (1)", "Gửi " + cfgLine(cfg), "Cài lại mã hóa (1)", "Mã hóa: " + (encOn ? "Bật" : "Tắt")];
+  if (encOn) names.push("Gửi password");
+  names.push("Đọc lại để kiểm tra");
+  const L = stepList(stepsEl, names); let i = 0;
+  const run = async fn => { L[i].className = "run"; const ok = await fn(); L[i].className = ok ? "ok" : "bad"; if (!ok) throw new Error(names[i]); i++; };
+  await run(async () => { await openMenu(); return ask("2", /Server connection|Khong/i); });
+  await run(() => ask("1", /cu phap|Port>/i));
+  await run(async () => { const m = mark(); await send(cfgLine(cfg)); return waitFor(/ma hoa|Da cai dat Server/i, m, 4000); });
+  await run(() => ask("1", /Thiet lap ma hoa|Bat|Tat/i));
+  if (encOn){
+    await run(() => ask("1", /password/i));
+    await run(async () => { const m = mark(); await send(cfg.pw); return waitFor(/Da cai dat xong|muon lam gi/i, m, 4000); });
+  } else {
+    await run(async () => { const m = mark(); await send("2"); return waitFor(/Da cai dat xong|muon lam gi/i, m, 4000); });
+  }
+  let after = null;
+  await run(async () => { after = await readParams(); return !!after; });
+  return after;
+}
+
+function cfgTable(a, b, labA, labB){
+  const rows = [["Giao thức","proto"],["Server","host"],["Port","port"],["Mã hóa","enc"],["Password","pw"]];
+  const show = (c,k) => k === "enc" ? (c[k] === "Bat" ? "Bật" : c[k] === "Tat" ? "Tắt" : c[k]) : (c[k] || "—");
+  if (!b) return "<table class='cfg'>" + rows.map(([n,k]) => `<tr><th>${n}</th><td>${esc(show(a,k))}</td></tr>`).join("") + "</table>";
+  const eq = (k) => k === "host" ? a.host.toLowerCase() === b.host.toLowerCase() : (k === "pw" && a.enc !== "Bat") ? true : String(a[k]) === String(b[k]);
+  return `<table class='cfg'><tr><th></th><th>${labA}</th><th>${labB}</th></tr>` +
+    rows.map(([n,k]) => `<tr><th>${n}</th><td>${esc(show(a,k))}</td><td class="${eq(k)?"y":"n"}">${esc(show(b,k))} ${eq(k)?"✓":"✗"}</td></tr>`).join("") + "</table>";
+}
+
+/* Giữ màn hình sáng khi đang thao tác */
+let wake = null;
+async function busyOn(){ busy = true; refreshButtons(); try{ wake = await navigator.wakeLock?.request("screen"); }catch(e){} }
+function busyOff(){ busy = false; refreshButtons(); try{ wake?.release(); }catch(e){} wake = null; }
+
+/* ============ Thư viện ============ */
+const lib = { all(){ return store.get("devices", []); }, save(a){ if (!store.set("devices", a)) alert("Không lưu được vào bộ nhớ điện thoại"); renderLib(); } };
+function upsertDevice(cfg, name, note){
+  const a = lib.all(); const now = new Date().toISOString();
+  let d = a.find(x => x.name === name);
+  if (d){ Object.assign(d, cfg, {readAt: now}); if (note != null) d.note = note; }
+  else { d = Object.assign({id: Date.now().toString(36), name, note: note || "", readAt: now}, cfg); a.push(d); }
+  lib.save(a); return d;
+}
+const fmtTime = iso => { try{ return new Date(iso).toLocaleString("vi-VN", {hour12:false}); }catch(e){ return iso; } };
+function renderLib(){
+  const q = unaccent($("libSearch").value.trim().toLowerCase());
+  const a = lib.all().slice().sort((x,y) => (y.readAt||"").localeCompare(x.readAt||""));
+  const f = a.filter(d => !q || unaccent([d.name,d.port,d.host,d.note].join(" ").toLowerCase()).includes(q));
+  const box = $("libList");
+  if (!f.length){ box.innerHTML = `<div class="empty">${a.length ? "Không có kết quả." : "Chưa có thiết bị nào. Đọc module cũ ở tab Sao chép để lưu vào đây."}</div>`; return; }
+  box.innerHTML = f.map(d => `<div class="dev" data-id="${esc(d.id)}">
+    <div class="t">${esc(d.name)}</div>
+    <div class="s">${esc(d.proto)} · ${esc(d.host)} · <b>${esc(d.port)}</b> · Mã hóa ${d.enc==="Bat"?"Bật":"Tắt"}${d.note?"<br>"+esc(d.note):""}<br>Đọc lúc ${esc(fmtTime(d.readAt))}</div>
+    <div class="row"><button class="sm oldb" data-act="use">Dùng làm nguồn</button><button class="sm" data-act="ren">Sửa tên</button><button class="sm" data-act="del">Xóa</button></div>
+  </div>`).join("");
+}
+$("libSearch").oninput = renderLib;
+$("libList").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const id = b.closest(".dev").dataset.id; const a = lib.all(); const d = a.find(x => x.id === id); if (!d) return;
+  if (b.dataset.act === "use"){ setSource(d, d.name); showTab("clone"); }
+  else if (b.dataset.act === "ren"){ const n = prompt("Tên tủ / thiết bị:", d.name); if (n){ d.name = n.trim(); const note = prompt("Ghi chú (tùy chọn):", d.note || ""); if (note != null) d.note = note; lib.save(a); } }
+  else if (b.dataset.act === "del"){ if (confirm("Xóa " + d.name + " khỏi thư viện?")) lib.save(a.filter(x => x.id !== id)); }
+};
+$("btnExport").onclick = () => {
+  const blob = new Blob([JSON.stringify({app:"modem-kntt", version:1, exportedAt:new Date().toISOString(), devices: lib.all()}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "modem-kntt-" + new Date().toISOString().slice(0,10) + ".json"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+};
+$("btnImport").onclick = () => $("fileImport").click();
+$("fileImport").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try{
+    const j = JSON.parse(await f.text()); const list = Array.isArray(j) ? j : j.devices;
+    if (!Array.isArray(list)) throw new Error("File không đúng định dạng");
+    const a = lib.all(); let n = 0;
+    for (const d of list){
+      if (!d || !d.port || !d.host) continue;
+      const clean = {id: d.id || (Date.now().toString(36)+n), name: String(d.name || ("Port " + d.port)), note: String(d.note||""),
+        proto: d.proto === "UDP" ? "UDP" : "TCP", host: String(d.host), port: String(d.port), enc: d.enc === "Tat" ? "Tat" : "Bat", pw: String(d.pw||""), readAt: d.readAt || new Date().toISOString()};
+      const i = a.findIndex(x => x.name === clean.name); if (i >= 0) a[i] = clean; else a.push(clean); n++;
+    }
+    lib.save(a); alert("Đã nhập " + n + " thiết bị");
+  }catch(err){ alert("Không nhập được: " + err.message); }
+};
+
+/* ============ Sao chép: cũ → mới ============ */
+let source = null, sourceName = "";
+function setSource(cfg, name){
+  source = {proto:cfg.proto, host:cfg.host, port:String(cfg.port), enc:cfg.enc, pw:cfg.pw || ""}; sourceName = name || "";
+  store.set("lastSource", {cfg: source, name: sourceName});
+  $("srcBox").innerHTML = `<div class="src"><b>Nguồn sao chép:</b> ${esc(sourceName || ("Port " + source.port))}${cfgTable(source)}</div>`;
+  $("cmpBox").innerHTML = ""; $("steps").innerHTML = "";
+  fillEdit(source, sourceName);
+  refreshButtons();
+}
+/* ---- Sửa thông số trước khi nạp ---- */
+let ePrevPort = "";
+function fillEdit(c, name){
+  $("eName").value = name || ""; $("eProto").value = c.proto; $("ePort").value = c.port; $("eHost").value = c.host;
+  $("eEnc").value = c.enc === "Tat" ? "Tat" : "Bat"; $("ePw").value = c.pw || ""; ePrevPort = String(c.port);
+  $("ePwBox").style.visibility = $("eEnc").value === "Bat" ? "visible" : "hidden";
+  updateDiff();
+}
+function editCfg(){
+  return {proto:$("eProto").value, host:$("eHost").value.trim(), port:$("ePort").value.trim(), enc:$("eEnc").value, pw:$("ePw").value.trim()};
+}
+function targetCfg(){
+  const c = editCfg();
+  if (!/^\d{2,5}$/.test(c.port)) { alert("Port không hợp lệ"); return null; }
+  if (!c.host || /["\s,]/.test(c.host)) { alert("Địa chỉ server không hợp lệ"); return null; }
+  if (c.enc === "Bat"){ if (!c.pw) c.pw = pwFor(c.port); if (c.pw.length > 8 || /"/.test(c.pw)) { alert("Password 1–8 ký tự, không chứa dấu \""); return null; } }
+  else c.pw = "";
+  return c;
+}
+function updateDiff(){
+  const box = $("diffNote"); if (!source){ box.innerHTML = ""; return; }
+  const t = editCfg(); const same = sameCfg(t, source);
+  const name = $("eName").value.trim();
+  const other = lib.all().find(d => String(d.port) === t.port && d.name !== name && d.name !== sourceName);
+  let h = same
+    ? `<div class="note" style="background:#eef5fc;border:1px solid #c6dcf2;border-radius:8px;padding:8px;margin-bottom:10px">Nạp <b>giống hệt</b> module cũ – dùng khi <b>thay module hỏng trong cùng tủ</b>. Tháo/tắt module cũ: không để 2 module cùng port ${esc(t.port)} chạy cùng lúc.</div>`
+    : `<div class="warn">Nạp cấu hình <b>KHÁC</b> module cũ: port <b>${esc(t.port)}</b>, server ${esc(t.host)}. Port này phải đúng port đã đăng ký cho tủ trên máy chủ và chưa có module nào khác dùng.</div>`;
+  if (other) h += `<div class="warn">⚠️ Port ${esc(t.port)} đang được <b>${esc(other.name)}</b> dùng (theo thư viện). Hai tủ trùng port sẽ không kết nối được.</div>`;
+  box.innerHTML = h;
+}
+$("ePort").addEventListener("input", () => {
+  const p = $("ePort").value.trim();
+  if (/^\d{5}$/.test(p)){
+    $("eHost").value = hostFor(p, $("eHost").value.trim());
+    const pw = $("ePw").value.trim();
+    if (!pw || pw === pwFor(ePrevPort) || pw === "T" + ePrevPort) $("ePw").value = pwFor(p);
+    ePrevPort = p;
+  }
+  updateDiff();
+});
+["eName","eHost","ePw"].forEach(id => $(id).addEventListener("input", updateDiff));
+["eProto","eEnc"].forEach(id => $(id).addEventListener("change", () => { $("ePwBox").style.visibility = $("eEnc").value === "Bat" ? "visible" : "hidden"; if ($("eEnc").value === "Bat" && !$("ePw").value.trim()) $("ePw").value = pwFor($("ePort").value.trim()); updateDiff(); }));
+$("btnResetEdit").onclick = () => { if (source) fillEdit(source, sourceName); };
+$("btnReadOld").onclick = async () => {
+  if (busy) return; await busyOn();
+  try{
+    const c = await readParams();
+    if (!c){ $("srcBox").innerHTML = "<div class='fail'>Không đọc được module cũ. Kiểm tra cáp, nguồn module, rồi thử lại.</div>"; return; }
+    if (c.enc === "Bat" && !c.pw) alert("Module không trả về password – hãy nhập password ở tab Cài tay nếu cần.");
+    const name = prompt("Đặt tên để lưu vào thư viện (vd: tên tủ):", "Tủ port " + c.port) || ("Tủ port " + c.port);
+    upsertDevice(c, name.trim());
+    setSource(c, name.trim());
+    sys("Đã đọc module cũ: " + cfgLine(c));
+  }catch(e){ alert(e.message); } finally{ busyOff(); }
+};
+$("btnWriteNew").onclick = async () => {
+  if (busy || !source) return;
+  const target = targetCfg(); if (!target) return;
+  const tName = $("eName").value.trim() || ("Tủ port " + target.port);
+  const edited = !sameCfg(target, source);
+  if (!confirm("Nạp cấu hình\n" + cfgLine(target) + (target.enc === "Bat" ? "\nMã hóa: Bật, password " + target.pw : "\nMã hóa: Tắt") + "\nvào module đang cắm cáp?\n\n(Đã chuyển đầu DB9 sang module MỚI chưa?)")) return;
+  await busyOn(); $("cmpBox").innerHTML = "";
+  try{
+    // Chống nhầm: nếu module đang cắm đã có đúng cấu hình nguồn → có thể chưa chuyển cáp
+    const cur = await readParams();
+    if (cur && sameCfg(cur, target)){
+      if (!confirm("Module đang cắm ĐÃ có cấu hình giống hệt nguồn.\nCó thể bạn vẫn đang cắm vào module cũ.\n\nVẫn ghi lại?")){ $("cmpBox").innerHTML = "<div class='done'>Module này đã đúng cấu hình – không cần nạp.</div>"; return; }
+    }
+    const after = await writeConfig(target, $("steps"));
+    const ok = sameCfg(after, target);
+    $("cmpBox").innerHTML = cfgTable(target, after, "Cần nạp", "Module mới") +
+      (ok ? "<div class='done'>✔ Nạp thành công" + (edited ? " cho " + esc(tName) + " (port " + esc(target.port) + ")" : " – module mới giống module cũ") + ". Lắp vào tủ, chờ đèn Online chớp nhanh và kiểm tra Connected trên máy chủ.</div>"
+          : "<div class='fail'>✗ Thông số đọc lại chưa khớp. Bấm nạp lại hoặc xem tab Terminal.</div>");
+    if (ok){
+      const stamp = "Đã nạp module mới " + fmtTime(new Date().toISOString());
+      if (edited || tName !== sourceName){ upsertDevice(target, tName, stamp); }
+      else { const a = lib.all(); const d = a.find(x => x.name === sourceName);
+        if (d){ d.note = ((d.note ? d.note + " · " : "") + stamp).slice(-300); lib.save(a); } }
+      try{ navigator.vibrate?.([80,60,80]); }catch(e){}
+    }
+  }catch(e){
+    sys("Dừng ở bước: " + e.message);
+    $("cmpBox").innerHTML = `<div class='fail'>Module không phản hồi ở bước: ${esc(e.message)}.<br>Ngắt kết nối → kết nối lại → nạp lại (module có thời gian chờ ngắn).</div>`;
+  }finally{ busyOff(); }
+};
+
+/* ============ Cài tay ============ */
+let hostTouched = false;
+$("mHost").addEventListener("input", () => hostTouched = true);
+$("mPort").addEventListener("input", () => {
+  const p = $("mPort").value.trim();
+  if (!hostTouched && /^\d{5}$/.test(p)) $("mHost").value = hostFor(p, "");
+  $("mPw").placeholder = p ? pwFor(p) : "T + 4 số cuối port";
+});
+$("mEnc").onchange = () => $("mPwBox").style.visibility = $("mEnc").value === "Bat" ? "visible" : "hidden";
+function manualCfg(){
+  const c = {proto:$("mProto").value, host:$("mHost").value.trim(), port:$("mPort").value.trim(), enc:$("mEnc").value, pw:$("mPw").value.trim()};
+  if (!/^\d{2,5}$/.test(c.port)) { alert("Port không hợp lệ"); return null; }
+  if (!c.host || /["\s,]/.test(c.host)) { alert("Địa chỉ server không hợp lệ"); return null; }
+  if (c.enc === "Bat"){ if (!c.pw) c.pw = pwFor(c.port); if (c.pw.length > 8 || /"/.test(c.pw)) { alert("Password 1–8 ký tự, không chứa dấu \""); return null; } }
+  return c;
+}
+$("btnManualSrc").onclick = () => { const c = manualCfg(); if (!c) return; setSource(c, "Nhập tay port " + c.port); showTab("clone"); };
+$("btnManualWrite").onclick = async () => {
+  const c = manualCfg(); if (!c || busy) return;
+  await busyOn(); $("mCmp").innerHTML = "";
+  try{
+    const after = await writeConfig(c, $("mSteps"));
+    $("mCmp").innerHTML = cfgTable(c, after, "Cần ghi", "Đọc lại") + (sameCfg(after, c) ? "<div class='done'>✔ Ghi thành công</div>" : "<div class='fail'>✗ Chưa khớp</div>");
+  }catch(e){ $("mCmp").innerHTML = `<div class='fail'>Dừng ở bước: ${esc(e.message)}</div>`; }
+  finally{ busyOff(); }
+};
+$("btnReadAny").onclick = async () => {
+  if (busy) return; await busyOn();
+  try{ const c = await readParams(); $("anyBox").innerHTML = c ? cfgTable(c) + `<div class="row" style="margin-top:8px"><button class="sm" id="anySave">Lưu vào thư viện</button></div>` : "<div class='fail'>Không đọc được</div>";
+       if (c) $("anySave").onclick = () => { const n = prompt("Tên:", "Tủ port " + c.port); if (n) upsertDevice(c, n.trim()); }; }
+  catch(e){ alert(e.message); } finally{ busyOff(); }
+};
+$("btnReboot").onclick = async () => {
+  if (busy || !confirm("Khởi động lại module?")) return; await busyOn();
+  try{ if (await openMenu()){ await send("3"); sys("Đã gửi lệnh khởi động lại"); } else alert("Module không phản hồi"); }
+  catch(e){ alert(e.message); } finally{ busyOff(); }
+};
+
+/* ============ Tab & khởi động ============ */
+function showTab(t){
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("act", b.dataset.tab === t));
+  ["clone","lib","manual","term"].forEach(x => $("pane-" + x).classList.toggle("hidden", x !== t));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+["baud","eol"].forEach(id => { const v = store.get("opt_"+id, null); if (v != null) $(id).value = v; $(id).addEventListener("change", () => store.set("opt_"+id, $(id).value)); });
+const ls = store.get("lastSource", null); if (ls && ls.cfg) setSource(ls.cfg, ls.name);
+renderLib(); refreshButtons();
+
+if (!("usb" in navigator) && !("serial" in navigator)){
+  const w = $("nosupport"); w.classList.remove("hidden");
+  w.innerHTML = /iPhone|iPad/i.test(navigator.userAgent) ? "iPhone/iPad không cho truy cập cổng USB. Hãy dùng điện thoại <b>Android + Chrome</b>."
+    : (!isSecureContext ? "Trang phải mở qua <b>https://</b> (vd: GitHub Pages) thì mới dùng được USB." : "Trình duyệt này không hỗ trợ USB. Hãy mở bằng <b>Chrome trên Android</b>.");
+  $("btnConn").disabled = true;
+}
+
+/* Cài đặt như app (PWA) */
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; $("btnInstall").classList.remove("hidden"); });
+$("btnInstall").onclick = async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; $("btnInstall").classList.add("hidden"); };
+window.addEventListener("appinstalled", () => $("btnInstall").classList.add("hidden"));
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
