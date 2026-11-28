@@ -223,6 +223,32 @@ nav button.active::after{transform:rotate(-45deg) scale(1)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.ok{background:var(--done);color:#fff}#toast.err{background:var(--err);color:#fff}
 .hidden{display:none!important}
+.devsw{display:flex;gap:6px;margin-top:12px;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.devsw button{flex:1;padding:9px 4px;border:none;border-radius:9px;background:transparent;color:var(--text-2);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.devsw button svg{width:16px;height:16px}
+.devsw button.on{background:var(--accent);color:var(--accent-ink)}
+.src-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 13px;margin-bottom:8px;cursor:pointer}
+.src-card:active{background:var(--surface-2)}
+.src-card .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.src-card .name{font-weight:700;font-size:14.5px}
+.src-card .meta{font-size:12px;color:var(--text-2);margin-top:3px;line-height:1.45}
+.tag{flex:0 0 auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap}
+.tag.modem{background:color-mix(in srgb,var(--new) 18%,transparent);color:var(--new)}
+.tag.ctrl{background:color-mix(in srgb,var(--info) 18%,transparent);color:var(--info)}
+.tag.both{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent)}
+.tag.none{background:color-mix(in srgb,var(--text-2) 18%,transparent);color:var(--text-2)}
+.grp-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--text-2);letter-spacing:.06em;text-transform:uppercase;margin:16px 2px 8px}
+.grp-title .cnt{margin-left:auto;font-size:11px;letter-spacing:0}
+.files{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--text-2);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-top:8px;max-height:110px;overflow:auto;line-height:1.5;word-break:break-all}
+.ev{font-size:12.5px;line-height:1.55;margin-top:8px}
+.ev li{margin:2px 0}
+.assign{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.assign button{padding:10px 6px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-size:13px;font-weight:700;cursor:pointer}
+.assign button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--text)}
+.ov-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+.ov-row:last-child{border-bottom:none}
+.ov-row .k{color:var(--text-2);flex:0 0 42%}
+.ov-row .v{flex:1;text-align:right;font-weight:600}
 details.adv summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--text-2);list-style:none}
 details.adv summary::-webkit-details-marker{display:none}
 @media (min-width:700px){ .modal-scrim{align-items:center} .modal-sheet{border-radius:18px;max-width:560px} }
@@ -245,6 +271,10 @@ details.adv summary::-webkit-details-marker{display:none}
   <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m7.5 12.3 3 3 6-6.3"/></symbol>
   <symbol id="i-bad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-antenna" viewBox="0 0 24 24"><path d="M12 12v9M8.5 21h7"/><circle cx="12" cy="10" r="1.6"/><path d="M8.2 6.6a5 5 0 0 0 0 6.8M15.8 6.6a5 5 0 0 1 0 6.8M5.4 3.8a9 9 0 0 0 0 12.4M18.6 3.8a9 9 0 0 1 0 12.4"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/></symbol>
   <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/></symbol>
 </svg>
 
@@ -252,8 +282,8 @@ details.adv summary::-webkit-details-marker{display:none}
   <header>
     <div class="head-row">
       <div>
-        <div class="eyebrow">Hệ thống chiếu sáng đô thị</div>
-        <h1>Modem <span>Minh Sáng</span></h1>
+        <div class="eyebrow">Minh Sáng · Hệ thống chiếu sáng đô thị</div>
+        <h1 id="appTitle">Modem kết nối <span>trung tâm</span></h1>
       </div>
       <div style="display:flex;align-items:center">
         <button class="pill-btn hidden" id="btnInstall">📲 Cài app</button>
@@ -261,6 +291,10 @@ details.adv summary::-webkit-details-marker{display:none}
           <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>
         </button>
       </div>
+    </div>
+    <div class="devsw" id="devSwitch">
+      <button data-d="modem" class="on"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-antenna"/></svg>Modem KNTT</button>
+      <button data-d="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chip"/></svg>Bộ điều khiển TT</button>
     </div>
     <div class="conn" id="conn">
       <span class="led"></span>
@@ -364,17 +398,51 @@ details.adv summary::-webkit-details-marker{display:none}
           <button class="btn ghost sm" id="btnReboot" disabled>Khởi động lại</button>
         </div>
         <div id="anyBox"></div>
-        <details class="adv" style="margin-top:14px"><summary>⚙ Tùy chọn cổng nâng cao</summary>
-          <div class="grid2" style="margin-top:10px">
-            <div class="field"><label>Tốc độ (baud)</label><select id="baud"><option>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></div>
-            <div class="field"><label>Kết thúc lệnh</label><select id="eol"><option value="auto">Tự dò</option><option value="">Không</option><option value="\r">CR</option><option value="\r\n">CR+LF</option><option value="\n">LF</option></select></div>
-          </div>
-        </details>
       </div>
+    </section>
+
+    <!-- ========== BỘ ĐIỀU KHIỂN: TỔNG QUAN ========== -->
+    <section class="view" id="view-ctrl">
+      <div class="card">
+        <div class="step-head">
+          <span class="step-no" style="background:var(--info)"><svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chip"/></svg></span>
+          <div><h3>Bộ điều khiển trung tâm</h3><small>Tủ điều khiển chiếu sáng – Minh Sáng</small></div>
+        </div>
+        <div id="ctrlState"></div>
+        <div class="ov-row"><span class="k">Nguồn đã gán</span><span class="v" id="ctrlSrcCount">0</span></div>
+        <div class="ov-row"><span class="k">Kết nối</span><span class="v">Cổng COM qua cáp USB‑C → RS232</span></div>
+        <div class="ov-row"><span class="k">Giao thức</span><span class="v" id="ctrlProto">Chưa xác định</span></div>
+      </div>
+      <div class="sec-title">Nguồn dùng cho bộ điều khiển</div>
+      <div id="ctrlSrcList"></div>
+      <div class="btn-row" style="margin-top:6px">
+        <button class="btn ghost sm" id="btnCtrlTerm">Mở Terminal</button>
+        <button class="btn sm" id="btnCtrlAddSrc">+ Thêm nguồn</button>
+      </div>
+      <div class="sec-title" style="margin-top:20px">Sổ tay bộ điều khiển</div>
+      <div class="card">
+        <div class="field"><label>Ghi chú: model, tốc độ cổng, lệnh đã thử, kết quả…</label>
+          <textarea id="ctrlNotes" rows="6" style="width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;resize:vertical;line-height:1.5" placeholder="vd: Bộ ĐK Minh Sáng MS-xxx, cổng RS232 9600 8N1, gửi 'hi' không phản hồi…"></textarea></div>
+        <div class="help" style="font-size:11.5px;color:var(--text-2)">Tự lưu trên điện thoại. Gửi nội dung này cùng log Terminal để mình viết phần đọc/nạp cho bộ điều khiển.</div>
+      </div>
+    </section>
+
+    <!-- ========== NGUỒN PHẦN MỀM ========== -->
+    <section class="view" id="view-src">
+      <div class="hint info"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg><div>Mỗi nguồn (phần mềm, tài liệu) được gán cho <b>Modem KNTT</b>, <b>Bộ điều khiển TT</b> hoặc cả hai. Bấm vào một nguồn để xem căn cứ và đổi lại nếu chưa đúng.</div></div>
+      <div id="srcGroups"></div>
+      <button class="btn sm" id="btnAddSrc" style="margin-top:8px">+ Thêm nguồn mới</button>
     </section>
 
     <!-- ========== TERMINAL ========== -->
     <section class="view" id="view-term">
+      <div class="card" style="padding:10px 13px">
+        <div class="grid2">
+          <div class="field" style="margin:0"><label>Tốc độ (baud)</label><select id="baud"><option>1200</option><option>2400</option><option>4800</option><option selected>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></div>
+          <div class="field" style="margin:0"><label>Kết thúc lệnh</label><select id="eol"><option value="auto">Tự dò</option><option value="">Không</option><option value="\r">CR</option><option value="\r\n">CR+LF</option><option value="\n">LF</option></select></div>
+        </div>
+        <div class="help" style="font-size:11.5px;color:var(--text-2);margin-top:6px">Đổi tốc độ → bấm Ngắt rồi Kết nối lại để áp dụng. Modem KNTT dùng 9600.</div>
+      </div>
       <div id="term"></div>
       <div class="quick"><button data-send="hi">hi</button><button data-send="1">1</button><button data-send="2">2</button><button data-send="3">3</button></div>
       <div class="send-row"><input id="txt" placeholder="Nhập lệnh…" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn sm" id="btnSend">Gửi</button></div>
@@ -382,11 +450,13 @@ details.adv summary::-webkit-details-marker{display:none}
     </section>
   </main>
 
-  <nav>
-    <button data-tab="clone" class="active"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>Sao chép</button>
-    <button data-tab="lib"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-lib"/></svg>Thư viện</button>
-    <button data-tab="manual"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sliders"/></svg>Cài tay</button>
-    <button data-tab="term"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-term"/></svg>Terminal</button>
+  <nav id="nav">
+    <button data-tab="ctrl" data-mode="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-home"/></svg>Tổng quan</button>
+    <button data-tab="clone" data-mode="modem" class="active"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>Sao chép</button>
+    <button data-tab="lib" data-mode="modem"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-lib"/></svg>Thư viện</button>
+    <button data-tab="manual" data-mode="modem"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sliders"/></svg>Cài tay</button>
+    <button data-tab="term" data-mode="modem ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-term"/></svg>Terminal</button>
+    <button data-tab="src" data-mode="modem ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-folder"/></svg>Nguồn</button>
   </nav>
 </div>
 
@@ -404,7 +474,12 @@ details.adv summary::-webkit-details-marker{display:none}
   <div class="mtop"><h2>📖 Hướng dẫn sử dụng</h2><button class="mclose" data-close><svg fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#i-x"/></svg></button></div>
   <p class="hp-intro">Đọc cấu hình module kết nối trung tâm 4G (Minh Sáng) và nạp sang module khác qua cổng Type‑C của điện thoại.</p>
 
-  <details open><summary><span class="n">1</span>Chuẩn bị</summary><div class="bd"><ul>
+  <details open><summary><span class="n">★</span>Hai thiết bị &amp; gán nguồn</summary><div class="bd"><ul>
+    <li>Dùng công tắc trên đầu trang để chọn <b>Modem KNTT</b> (module 4G gửi dữ liệu về trung tâm) hoặc <b>Bộ điều khiển TT</b> (tủ điều khiển chiếu sáng).</li>
+    <li>Tab <b>Nguồn</b> liệt kê các phần mềm, tài liệu đã nhận và cho biết mỗi thứ dùng cho thiết bị nào, kèm căn cứ. Bấm vào một nguồn để gán lại nếu chưa đúng.</li>
+    <li>Các mục 1–10 bên dưới là hướng dẫn cho <b>Modem KNTT</b>. Phần đọc/nạp cho bộ điều khiển sẽ có khi có phần mềm hoặc tài liệu của bộ điều khiển. Trong lúc chờ, dùng Terminal và Sổ tay để ghi lại kết quả thử.</li></ul></div></details>
+
+  <details><summary><span class="n">1</span>Chuẩn bị</summary><div class="bd"><ul>
     <li>Điện thoại <b>Android</b> có <b>OTG</b>, mở bằng <b>Chrome</b>. iPhone không dùng được.</li>
     <li>Cáp <b>USB‑C → RS232 DB9</b> (chip CH340, FTDI, CP2102 hoặc PL2303), hoặc cáp USB → RS232 kèm đầu OTG USB‑C → USB‑A.</li>
     <li>Cáp loại <b>RS232</b>, không dùng loại TTL. Nếu hai đầu DB9 cùng giới tính thì thêm <b>đầu đổi giới tính</b>.</li>
@@ -1061,9 +1136,143 @@ $("btnReboot").onclick = async () => {
   catch(e){ toast(e.message, "err"); } finally{ busyOff(); }
 };
 
+
+/* ============ Nguồn phần mềm (gán cho thiết bị) ============ */
+const DEV_LABEL = {modem:"Modem KNTT", ctrl:"Bộ điều khiển TT", both:"Cả hai", none:"Chưa xác định"};
+const BUILTIN_SRC = [
+  {id:"srv", builtin:true, name:"Phần mềm máy chủ nhận kết nối Modem 4G",
+   pack:"File 1 + File 2 › 1. Phan mem ket noi Modem kết nối trung tâm minh sáng",
+   runs:"Máy tính chủ ở trung tâm (Windows) – chép vào thư mục Startup",
+   files:"TCP_IP_Connect.exe (v4.05) · 00, 01, 02, 35, 52, 77, 97, 98, 99.exe · 40000…40028, 40350, 40352, 40520…40526, 40770…40774, 40998.exe · 1. Huong dan su dung phan mem.pdf",
+   guess:"modem",
+   evidence:["Tiêu đề tài liệu: “Hướng dẫn cài đặt phần mềm trên máy chủ để <b>modem 4G</b> kết nối với máy chủ”.",
+     "Cách kiểm tra trong tài liệu: đèn <b>Online của modem 4G</b> chớp nhanh và TCP_IP_Connect báo <b>Connected</b> ở port của tủ.",
+     "Các file 4xxxx.exe chuyển dữ liệu giữa hai cổng mạng (vd 40000 ↔ 42000): đây là cầu nối từ modem về phần mềm ở trung tâm, không nạp vào thiết bị nào.",
+     "Không chạy trên điện thoại; giữ nguyên trên máy chủ."]},
+  {id:"cfg", builtin:true, name:"Phần mềm cấu hình port module KNTT",
+   pack:"File 2 › 2. Phan mem cau hinh port module kntt",
+   runs:"Máy tính qua cổng COM. App này đã thay thế: tab Sao chép / Cài tay",
+   files:"AccessPort.exe · Apsm.sys · Apsm_x64.sys · AccessPort.ini · Huong dan cau hinh port module.pdf",
+   guess:"modem",
+   evidence:["Tên thư mục: “cấu hình port <b>module kntt</b>” (module kết nối trung tâm).",
+     "Tài liệu hướng dẫn cài server, port, mã hóa, password cho <b>module 4G</b>: chính là menu hi → 1/2/3 mà app đang dùng.",
+     "AccessPort chỉ là phần mềm gõ lệnh cổng COM, không chứa firmware."]},
+  {id:"ctrlsw", builtin:true, name:"Phần mềm / tài liệu bộ điều khiển trung tâm",
+   pack:"Chưa có trong 2 file đã gửi",
+   runs:"—",
+   files:"(chưa có)",
+   guess:"ctrl", placeholder:true,
+   evidence:["Trong 2 file nén không có phần mềm nào dành cho bộ điều khiển.",
+     "Tài liệu modem bắt đầu từ <b>Trang 5</b>, nên trang 1–4 của bộ tài liệu Minh Sáng (có thể là phần bộ điều khiển) chưa được gửi.",
+     "Khi có file, bấm vào đây để ghi tên file và gán đúng thiết bị."]}
+];
+const srcStore = {
+  load(){ const st = store.get("srcState", {}); const custom = store.get("srcCustom", []);
+    return BUILTIN_SRC.map(b => Object.assign({}, b, st[b.id] || {})).concat(custom.map(c => Object.assign({}, c, st[c.id] || {}))); },
+  setAssign(id, dev){ const st = store.get("srcState", {}); st[id] = Object.assign(st[id] || {}, {assign: dev}); store.set("srcState", st); },
+  setFields(id, f){ const custom = store.get("srcCustom", []); const c = custom.find(x => x.id === id);
+    if (c){ Object.assign(c, f); store.set("srcCustom", custom); }
+    else { const st = store.get("srcState", {}); st[id] = Object.assign(st[id] || {}, f); store.set("srcState", st); } },
+  add(src){ const custom = store.get("srcCustom", []); custom.push(src); store.set("srcCustom", custom); },
+  remove(id){ store.set("srcCustom", store.get("srcCustom", []).filter(x => x.id !== id)); const st = store.get("srcState", {}); delete st[id]; store.set("srcState", st); }
+};
+const assignOf = s => s.assign || s.guess || "none";
+const tagHtml = dev => `<span class="tag ${dev}">${DEV_LABEL[dev]}</span>`;
+function srcCardHtml(s){
+  const dev = assignOf(s);
+  return `<div class="src-card" data-src="${esc(s.id)}"><div class="top"><div style="min-width:0"><div class="name">${esc(s.name)}</div>
+    <div class="meta">${esc(s.pack || "")}</div>${s.runs && s.runs !== "—" ? `<div class="meta">Chạy trên: ${esc(s.runs)}</div>` : ""}</div>${tagHtml(dev)}</div></div>`;
+}
+function renderSources(){
+  const all = srcStore.load();
+  const groups = [["modem","Modem KNTT"],["ctrl","Bộ điều khiển TT"],["both","Dùng cho cả hai"],["none","Chưa xác định"]];
+  $("srcGroups").innerHTML = groups.map(([k, title]) => {
+    const list = all.filter(s => assignOf(s) === k);
+    if (!list.length && (k === "both")) return "";
+    return `<div class="grp-title">${title}<span class="cnt">${list.length}</span></div>` +
+      (list.length ? list.map(srcCardHtml).join("") : `<div class="empty" style="padding:14px">Chưa có nguồn nào</div>`);
+  }).join("");
+  const forCtrl = all.filter(s => ["ctrl","both"].includes(assignOf(s)));
+  const real = forCtrl.filter(s => !s.placeholder || (s.files && s.files !== "(chưa có)"));
+  $("ctrlSrcCount").textContent = real.length ? real.length + " nguồn" : "Chưa có";
+  $("ctrlSrcList").innerHTML = forCtrl.length ? forCtrl.map(srcCardHtml).join("") : `<div class="empty" style="padding:14px">Chưa gán nguồn nào cho bộ điều khiển</div>`;
+  $("ctrlState").innerHTML = real.length
+    ? hint("info", `Đã gán <b>${real.length}</b> nguồn cho bộ điều khiển. Gửi các file này cho mình để viết phần đọc/nạp riêng cho bộ điều khiển.`)
+    : hint("warn", `Chưa có phần mềm hoặc tài liệu của bộ điều khiển. Cả 2 file đã gửi đều dành cho <b>Modem KNTT</b>. Khi có file, bấm <b>+ Thêm nguồn</b> để ghi lại.`);
+}
+async function openSource(id){
+  const s = srcStore.load().find(x => x.id === id); if (!s) return;
+  let dev = assignOf(s);
+  const html = `<dl class="kv" style="margin-top:0"><dt>Gói</dt><dd style="font-family:inherit;font-weight:500">${esc(s.pack || "—")}</dd><dt>Chạy trên</dt><dd style="font-family:inherit;font-weight:500">${esc(s.runs || "—")}</dd></dl>
+    <div class="files">${esc(s.files || "—")}</div>
+    ${s.evidence && s.evidence.length ? `<div class="ev"><b>Căn cứ${s.builtin ? " (app nhận định)" : ""}:</b><ul style="padding-left:18px;margin:4px 0">${s.evidence.map(e => `<li>${s.builtin ? e : esc(e)}</li>`).join("")}</ul></div>` : (s.note ? `<div class="ev">${esc(s.note)}</div>` : "")}
+    ${s.guess && s.assign && s.assign !== s.guess ? hint("warn", `App nhận định là <b>${DEV_LABEL[s.guess]}</b>, bạn đã đổi thành <b>${DEV_LABEL[s.assign]}</b>.`) : ""}
+    <div class="field" style="margin:14px 0 0"><label>Dùng cho</label><div class="assign" id="asg">
+      ${["modem","ctrl","both","none"].map(k => `<button data-v="${k}" class="${k === dev ? "on" : ""}">${DEV_LABEL[k]}</button>`).join("")}</div></div>`;
+  const actions = [{text:"Đóng", cls:"ghost", value:null}, {text:"Lưu", value:"save"}];
+  if (s.placeholder || !s.builtin) actions.unshift({text: s.builtin ? "Ghi tên file" : "Sửa", cls:"ghost", value:"edit"});
+  if (!s.builtin) actions.unshift({text:"Xóa", cls:"danger", value:"del"});
+  const p = dialog({title: s.name, html, actions});
+  $("asg").onclick = e => { const b = e.target.closest("button"); if (!b) return; dev = b.dataset.v; $("asg").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); };
+  const r = await p;
+  if (r === "save"){ srcStore.setAssign(s.id, dev); renderSources(); toast("Đã gán: " + DEV_LABEL[dev], "ok"); }
+  else if (r === "edit"){ await addOrEditSource(s); }
+  else if (r === "del"){ if (await uiConfirm("Xóa nguồn?", `Xóa <b>${esc(s.name)}</b> khỏi danh sách?`, "Xóa", "danger")){ srcStore.remove(s.id); renderSources(); toast("Đã xóa"); } }
+}
+function editSource(s, dev){
+  const isNew = !s;
+  s = s || {name:"", pack:"", files:"", note:""};
+  const r = dialog({title: isNew ? "Thêm nguồn mới" : "Sửa nguồn",
+    html:`<div class="field"><label>Tên nguồn</label><input id="sfName" value="${esc(s.placeholder ? "" : s.name)}" placeholder="vd: Phần mềm cài đặt bộ điều khiển MS"></div>
+      <div class="field"><label>Tên file / thư mục</label><input id="sfFiles" value="${esc(s.files === "(chưa có)" ? "" : s.files)}" placeholder="vd: MS_Controller_Setup.exe, HDSD.pdf"></div>
+      <div class="field"><label>Lấy từ đâu</label><input id="sfPack" value="${esc(s.placeholder ? "" : (s.pack || ""))}" placeholder="vd: file rar nhận từ Minh Sáng ngày…"></div>
+      <div class="field"><label>Ghi chú</label><input id="sfNote" value="${esc(s.note || "")}" placeholder="Chạy trên máy nào, dùng để làm gì…"></div>
+      <div class="field" style="margin:0"><label>Dùng cho</label><div class="assign" id="asg2">${["modem","ctrl","both","none"].map(k => `<button data-v="${k}" class="${k === (dev || "ctrl") ? "on" : ""}">${DEV_LABEL[k]}</button>`).join("")}</div></div>`,
+    actions:[{text:"Hủy", cls:"ghost", value:null},{text:"Lưu", value:"ok"}]});
+  return r;
+}
+// cần đọc giá trị trước khi hộp thoại đóng → bắt sự kiện ở mức hộp thoại
+let asgDev = "ctrl";
+document.addEventListener("click", e => { const b = e.target.closest("#asg2 button"); if (!b) return; asgDev = b.dataset.v; b.parentNode.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); });
+async function addOrEditSource(s){
+  asgDev = s ? assignOf(s) : (mode === "ctrl" ? "ctrl" : "none");
+  const p = editSource(s, asgDev);
+  const read = () => ({name:$("sfName").value.trim(), files:$("sfFiles").value.trim(), pack:$("sfPack").value.trim(), note:$("sfNote").value.trim()});
+  let snap = null;
+  const btn = $("dlgActions").lastChild; const orig = btn.onclick;
+  btn.onclick = () => { snap = read(); orig(); };
+  const r = await p;
+  if (r !== "ok" || !snap) return;
+  if (!snap.name && !(s && s.placeholder && snap.files)) return toast("Chưa nhập tên nguồn", "err");
+  if (!s){ srcStore.add({id:"u" + Date.now().toString(36), name:snap.name, files:snap.files || "—", pack:snap.pack, note:snap.note, runs:snap.note, assign:asgDev}); }
+  else if (s.placeholder){ srcStore.setFields(s.id, {name: snap.name || s.name, files: snap.files || s.files, pack: snap.pack || s.pack, note: snap.note, assign: asgDev}); }
+  else { srcStore.setFields(s.id, Object.assign(snap, {runs: snap.note})); srcStore.setAssign(s.id, asgDev); }
+  renderSources(); toast("Đã lưu nguồn", "ok");
+}
+document.addEventListener("click", e => { const c = e.target.closest(".src-card"); if (c) openSource(c.dataset.src); });
+$("btnAddSrc").onclick = () => addOrEditSource(null);
+$("btnCtrlAddSrc").onclick = () => addOrEditSource(null);
+$("btnCtrlTerm").onclick = () => showTab("term");
+$("ctrlNotes").value = store.get("ctrlNotes", "");
+$("ctrlNotes").addEventListener("input", () => store.set("ctrlNotes", $("ctrlNotes").value));
+
+/* ============ Chế độ thiết bị ============ */
+let mode = "modem";
+const TITLES = {modem:'Modem kết nối <span>trung tâm</span>', ctrl:'Bộ điều khiển <span>trung tâm</span>'};
+const HOME = {modem:"clone", ctrl:"ctrl"};
+function setMode(m, silent){
+  mode = m; store.set("mode", m);
+  $("devSwitch").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.d === m));
+  $("appTitle").innerHTML = TITLES[m];
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("hidden", !b.dataset.mode.split(" ").includes(m)));
+  showTab(HOME[m]);
+  if (!silent && m === "modem" && $("baud").value !== "9600") toast("Modem KNTT dùng 9600 baud – chỉnh lại ở tab Terminal", "err");
+}
+$("devSwitch").addEventListener("click", e => { const b = e.target.closest("button"); if (b && b.dataset.d !== mode) setMode(b.dataset.d); });
+
 /* ============ Tab, hướng dẫn, khởi động ============ */
 function showTab(t){
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + t));
   window.scrollTo(0,0);
   if (t === "term") term.scrollTop = term.scrollHeight;
@@ -1078,7 +1287,7 @@ window.addEventListener("popstate", () => { closeHelp(); if ($("dlg").classList.
 
 ["baud","eol"].forEach(id => { const v = store.get("opt_"+id, null); if (v != null) $(id).value = v; $(id).addEventListener("change", () => store.set("opt_"+id, $(id).value)); });
 const ls = store.get("lastSource", null); if (ls && ls.cfg) setSource(ls.cfg, ls.name);
-renderLib(); refreshButtons();
+renderLib(); refreshButtons(); renderSources(); setMode(store.get("mode", "modem"), true);
 
 if (!("usb" in navigator) && !("serial" in navigator)){
   const w = $("nosupport"); w.classList.add("show");
