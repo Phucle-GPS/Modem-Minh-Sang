@@ -144,7 +144,7 @@ main{flex:1;padding:16px 18px calc(96px + env(safe-area-inset-bottom,0px))}
 .cmp thead th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-2);font-weight:700}
 .cmp tbody th{color:var(--text-2);font-weight:500;width:26%}
 .cmp td{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600}
-.cmp td.y{color:var(--done)}.cmp td.n{color:var(--err)}
+.cmp.qk tbody th{width:48%}.cmp td.y{color:var(--done)}.cmp td.n{color:var(--err)}
 .result{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:12px 13px;margin-top:12px;font-size:13.5px;line-height:1.5}
 .result svg{width:22px;height:22px;flex:0 0 auto}
 .result b{display:block;font-size:14.5px}
@@ -447,8 +447,15 @@ details.adv summary::-webkit-details-marker{display:none}
 
     <!-- ========== DÒ BỘ ĐIỀU KHIỂN ========== -->
     <section class="view" id="view-probe">
-      <div class="hint warn"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg><div>Cáp cắm vào <b>cổng nối với modem</b> trên bộ điều khiển. Làm theo thứ tự <b>1 → 2 → 3</b>. Bước 1 và 2 chỉ nghe; bước 3 chỉ gửi lệnh <b>đọc</b>, không ghi hay điều khiển đèn.</div></div>
+      <div class="card">
+        <div class="step-head"><span class="step-no old" style="font-size:15px">⚡</span><div><h3>Dò nhanh</h3><small>Quét tốc độ → tìm địa chỉ → đọc thanh ghi, tự động</small></div></div>
+        <p class="desc">Cắm cáp vào <b>cổng nối với modem</b> trên bộ điều khiển rồi bấm Dò nhanh. App chỉ gửi lệnh <b>đọc</b> Modbus, không ghi gì và không bật/tắt đèn. Mất khoảng 15–30 giây.</p>
+        <button class="btn" id="btnQuick" disabled>⚡ Dò nhanh</button>
+        <ul class="timeline" id="qkSteps"></ul>
+        <div id="qkResult"></div>
+      </div>
 
+      <details class="adv" id="probeDetail" style="margin:4px 2px 14px"><summary>▸ Dò chi tiết từng bước (nghe, quét, Modbus)</summary><div style="margin-top:12px">
       <div class="card">
         <div class="step-head"><span class="step-no old">1</span><div><h3>Nghe thụ động</h3><small>Không gửi gì, xem bộ điều khiển có tự phát dữ liệu</small></div></div>
         <button class="btn" id="btnListen" disabled>▶ Bắt đầu nghe</button>
@@ -477,6 +484,8 @@ details.adv summary::-webkit-details-marker{display:none}
         <button class="btn new" id="btnModbus" disabled>Dò Modbus</button>
         <div class="frames" id="mbList" style="margin-top:10px"></div>
       </div>
+
+      </div></details>
 
       <div class="btn-row">
         <button class="btn ghost sm" id="btnProbeNote">Lưu kết quả vào Sổ tay</button>
@@ -544,7 +553,8 @@ details.adv summary::-webkit-details-marker{display:none}
 
   <details><summary><span class="n">◎</span>Dò bộ điều khiển trung tâm</summary><div class="bd"><ol>
     <li>Rút cáp DB9 đang nối bộ điều khiển với <b>modem</b>, cắm cáp điện thoại vào cổng đó trên bộ điều khiển.</li>
-    <li>Chọn <b>Bộ điều khiển TT</b> → tab <b>Dò</b> → bấm <b>Kết nối</b>.</li>
+    <li>Chọn <b>Bộ điều khiển TT</b> → tab <b>Dò</b> → bấm <b>Kết nối</b> → bấm <b>⚡ Dò nhanh</b>. App tự quét tốc độ, tìm địa chỉ và đọc thanh ghi (khoảng 15–30 giây).</li>
+    <li>Muốn dò kỹ hơn thì mở <b>Dò chi tiết từng bước</b>:</li>
     <li><b>Bước 1 – Nghe:</b> để 1–2 phút. Có gói tin là đã thông.</li>
     <li><b>Bước 2 – Quét tốc độ:</b> app thử 9600, 19200, 4800… Tốc độ nào có dữ liệu sẽ tô xanh, và app tự chuyển sang tốc độ đó.</li>
     <li><b>Bước 3 – Dò Modbus:</b> gửi lệnh <b>đọc</b> tới địa chỉ 1–16. Có "ID … trả lời" là bộ điều khiển dùng Modbus.</li>
@@ -843,7 +853,7 @@ function refreshButtons(){
   const on = !!link;
   $("btnConn").disabled = busy;
   for (const id of ["btnReadOld","btnManualWrite","btnReadAny","btnReboot"]) $(id).disabled = !on || busy;
-  for (const id of ["btnListen","btnScan","btnModbus"]) $(id).disabled = !on || (busy && probeRun !== id);
+  for (const id of ["btnQuick","btnListen","btnScan","btnModbus"]) $(id).disabled = !on || (busy && probeRun !== id);
   $("btnWriteNew").disabled = !on || busy || !source;
   $("editToggle").disabled = !source || busy;
 }
@@ -1550,6 +1560,109 @@ $("btnModbus").onclick = async () => {
     toast(found ? `Tìm thấy ${found} thiết bị Modbus` : "Không có thiết bị Modbus trả lời", found ? "ok" : "err");
   }
 };
+
+/* ===== Dò nhanh: quét baud (Modbus ID 1–10) → dò ID 1–32 → đọc thanh ghi ===== */
+// thời gian chờ phản hồi theo tốc độ: thời gian truyền ~30 byte + 120 ms cho thiết bị xử lý
+const waitFor_ = baud => 120 + Math.ceil(300000 / baud);
+async function mbQuery(id, fc, reg, qty, wait = 160){
+  capture = makeCapture();
+  await sendBytes(withCrc(new Uint8Array([id, fc, reg >> 8, reg & 0xFF, qty >> 8, qty & 0xFF])));
+  const t = Date.now() + wait;
+  while (Date.now() < t){ await sleep(30); const m = findModbus(capture.bytes()).filter(x => x.id === id); if (m.length){ await sleep(20); break; } }
+  const u = capture.bytes(); capture = null;
+  const m = findModbus(u).filter(x => x.id === id)[0];
+  return {u, frame: m ? m.frame : null};
+}
+function decodeRegs(f){
+  if (!f || (f[1] & 0x80)) return null;
+  const n = f[2], out = [];
+  if (f[1] === 3 || f[1] === 4){ for (let i = 0; i + 1 < n; i += 2) out.push((f[3+i] << 8) | f[4+i]); }
+  else { for (let i = 0; i < n; i++) out.push(f[3+i]); }
+  return out;
+}
+$("btnQuick").onclick = async () => {
+  if (probeRun === "btnQuick"){ probeStop = true; return; }
+  if (busy) return;
+  probeRun = "btnQuick"; probeStop = false; await busyOn(); $("btnQuick").textContent = "■ Dừng";
+  const names = ["Quét tốc độ cổng (8 mức)", "Dò địa chỉ thiết bị", "Đọc thanh ghi"];
+  const L = stepList($("qkSteps"), names); $("qkResult").innerHTML = "";
+  const orig = $("baud").value; let hit = null; const dataSeen = [];
+  plog(`[Dò nhanh] bắt đầu ${tstamp()}`);
+  try{
+    // 1. quét baud
+    L[0].className = "run";
+    for (const b of BAUDS){
+      if (probeStop || !link) break;
+      L[0].textContent = `Quét tốc độ cổng: đang thử ${b}…`;
+      await reopenAt(b); await sleep(150);
+      let junkAll = new Uint8Array(0);
+      for (let id = 1; id <= 10 && !probeStop && link; id++){
+        const r = await mbQuery(id, 3, 0, 1, waitFor_(b));
+        if (r.frame){ hit = {baud: b, id, frame: r.frame}; break; }
+        if (r.u.length){ const t = new Uint8Array(junkAll.length + r.u.length); t.set(junkAll); t.set(r.u, junkAll.length); junkAll = t; }
+      }
+      if (junkAll.length && junkRatio(junkAll) <= .6) dataSeen.push({baud: b, u: junkAll});
+      plog(`  ${b}: ${hit && hit.baud === b ? "Modbus ID " + hit.id : (junkAll.length ? junkAll.length + " byte " + (junkRatio(junkAll) > .6 ? "rác" : "lạ") : "im lặng")}`);
+      if (hit) break;
+    }
+    if (!hit){
+      L[0].className = "bad"; L[0].textContent = "Quét tốc độ: không có Modbus trả lời"; L[1].className = "bad"; L[2].className = "bad";
+      if (link) await reopenAt(+orig).catch(()=>{});
+      $("qkResult").innerHTML = resultBox(false, "Chưa tìm thấy bộ điều khiển", (dataSeen.length
+        ? `Có dữ liệu lạ ở <b>${dataSeen.map(d => d.baud).join(", ")}</b> baud nhưng không phải Modbus, có thể là giao thức riêng của Minh Sáng. Mẫu: <span class="mono">${esc(hexStr(dataSeen[0].u.slice(0,16)))}</span>.<br>`
+        : "Không có phản hồi ở mọi tốc độ.<br>") +
+        "Thử lần lượt: <b>đầu null‑modem DB9</b> (đổi chéo TX/RX) → <b>cáp USB → RS485</b> → bấm Dò nhanh lại.");
+      plog("[Dò nhanh] không tìm thấy Modbus");
+      return;
+    }
+    L[0].className = "ok"; L[0].textContent = `Tốc độ: ${hit.baud} baud`;
+    $("baud").value = String(hit.baud);
+
+    // 2. dò địa chỉ 1–32
+    L[1].className = "run"; const found = [];
+    for (let id = 1; id <= 32 && !probeStop && link; id++){
+      L[1].textContent = `Dò địa chỉ: ${id}/32 · đã thấy ${found.length}`;
+      const r = id === hit.id ? {frame: hit.frame} : await mbQuery(id, 3, 0, 1, waitFor_(hit.baud));
+      if (r.frame) found.push(id);
+    }
+    L[1].className = "ok"; L[1].textContent = `Địa chỉ trả lời: ${found.join(", ")}`;
+    plog(`  Địa chỉ trả lời @${hit.baud}: ${found.join(", ")}`);
+
+    // 3. đọc thanh ghi
+    L[2].className = "run"; const reads = [];
+    for (const id of found.slice(0, 5)){
+      if (probeStop || !link) break;
+      for (const [fc, nm] of [[3,"Holding 0–9"],[4,"Input 0–9"],[1,"Coil 0–15"],[2,"Discrete 0–15"]]){
+        L[2].textContent = `Đọc ID ${id}: ${nm}`;
+        const r = await mbQuery(id, fc, 0, fc <= 2 ? 16 : 10, waitFor_(hit.baud) + 120);
+        const f = r.frame;
+        const v = decodeRegs(f);
+        reads.push({id, fc, nm, f, v, ex: f && (f[1] & 0x80) ? f[2] : null});
+        plog(`  ID ${id} FC${fc} ${nm}: ${f ? (v ? v.join(" ") : "ngoại lệ " + f[2]) : "không trả lời"}${f ? "  [" + hexStr(f) + "]" : ""}`);
+      }
+    }
+    L[2].className = "ok"; L[2].textContent = "Đọc thanh ghi xong";
+    // điền sẵn bước 3 chi tiết
+    $("mbFrom").value = found[0]; $("mbTo").value = found[found.length-1];
+
+    const rows = reads.map(r => `<tr><th>ID ${r.id} · ${r.nm}</th><td>${r.v ? esc(r.v.join(" ")) : r.ex != null ? `<span style="color:var(--text-2)">không hỗ trợ (mã ${r.ex})</span>` : `<span style="color:var(--text-2)">không trả lời</span>`}</td></tr>`).join("");
+    $("qkResult").innerHTML = resultBox(true, `Bộ điều khiển trả lời Modbus RTU`, `Tốc độ <span class="mono" style="font-weight:700">${hit.baud}</span> baud · 8‑N‑1 · địa chỉ <span class="mono" style="font-weight:700">${found.join(", ")}</span>. App đã chuyển cổng sang ${hit.baud}.`) +
+      `<table class="cmp qk"><tbody>${rows}</tbody></table>
+       <p class="desc" style="margin-top:10px">Bấm <b>Sao chép kết quả</b> và gửi cho người hỗ trợ để viết phần đọc thông số cho bộ điều khiển.</p>`;
+    $("ctrlProto").textContent = `Modbus RTU · ${hit.baud} · ID ${found.join(",")}`;
+    store.set("ctrlProto", $("ctrlProto").textContent);
+    plog(`[Dò nhanh] KẾT QUẢ: Modbus RTU ${hit.baud} 8N1, ID ${found.join(",")}`);
+    try{ navigator.vibrate?.([80,60,80]); }catch(e){}
+    toast(`Tìm thấy: ${hit.baud} baud, ID ${found.join(",")}`, "ok");
+  }catch(e){
+    toast(e.message, "err"); plog("[Dò nhanh] lỗi: " + e.message);
+  }finally{
+    capture = null; probeRun = null; $("btnQuick").textContent = "⚡ Dò nhanh"; busyOff();
+    if (probeStop) plog("[Dò nhanh] người dùng dừng");
+  }
+};
+{ const cp = store.get("ctrlProto", ""); if (cp) $("ctrlProto").textContent = cp; }
+
 const probeText = () => `== Dò bộ điều khiển ${new Date().toLocaleString("vi-VN",{hour12:false})} ==\n` + probeLog.join("\n");
 $("btnProbeNote").onclick = () => { if (!probeLog.length) return toast("Chưa có kết quả dò"); $("ctrlNotes").value = ($("ctrlNotes").value ? $("ctrlNotes").value + "\n\n" : "") + probeText(); store.set("ctrlNotes", $("ctrlNotes").value); toast("Đã lưu vào Sổ tay", "ok"); };
 $("btnProbeCopy").onclick = async () => { if (!probeLog.length) return toast("Chưa có kết quả dò"); try{ await navigator.clipboard.writeText(probeText()); toast("Đã sao chép – dán gửi qua Zalo/chat", "ok"); }catch(e){ toast("Không sao chép được", "err"); } };
