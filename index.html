@@ -455,6 +455,15 @@ details.adv summary::-webkit-details-marker{display:none}
         <div id="qkResult"></div>
       </div>
 
+      <div class="card">
+        <div class="step-head"><span class="step-no old" style="font-size:14px">⌁</span><div><h3>Dò giao thức khác</h3><small>Lệnh chữ, Modbus ASCII, DL/T 645, IEC 62056‑21</small></div></div>
+        <p class="desc">Gửi lần lượt các kiểu lệnh <b>đọc / hỏi</b> phổ biến và ghi lại kiểu nào bo trả lời. Mặc định thử ở tốc độ đang chọn (cổng nối modem: 9600).</p>
+        <label class="chk" style="margin-bottom:10px"><input type="checkbox" id="opAllBaud">Thử ở mọi tốc độ (lâu hơn, khoảng 1–2 phút)</label>
+        <button class="btn" id="btnOtherProto" disabled>Dò giao thức khác</button>
+        <table class="scan" id="opTable"></table>
+        <div id="opResult"></div>
+      </div>
+
       <details class="adv" id="probeDetail" style="margin:4px 2px 14px"><summary>▸ Dò chi tiết từng bước (nghe, quét, Modbus)</summary><div style="margin-top:12px">
       <div class="card">
         <div class="step-head"><span class="step-no old">1</span><div><h3>Nghe thụ động</h3><small>Không gửi gì, xem bộ điều khiển có tự phát dữ liệu</small></div></div>
@@ -493,6 +502,37 @@ details.adv summary::-webkit-details-marker{display:none}
       </div>
     </section>
 
+    <!-- ========== CHIP: ĐỌC CHƯƠNG TRÌNH STM32 ========== -->
+    <section class="view" id="view-chip">
+      <div class="hint warn"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg><div>Chức năng này <b>chỉ đọc</b> chương trình. App không có lệnh ghi, xóa hay gỡ khóa đọc. Nếu chip đã <b>khóa đọc</b>, app sẽ dừng: gỡ khóa sẽ <b>xóa sạch chương trình</b>.</div></div>
+
+      <div class="card">
+        <div class="step-head"><span class="step-no" style="background:var(--info)"><svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chip"/></svg></span><div><h3>Đọc qua bootloader STM32</h3><small>Dùng cáp nối điện thoại, không cần mạch nạp</small></div></div>
+        <ol style="margin:0 0 12px;padding-left:20px;font-size:13.5px;line-height:1.6">
+          <li>Ngắt nguồn bo. Nối chân <b>BOOT0</b> (chân <b>60</b> của STM32F103RCT6) lên <b>3,3V</b> (điểm đo 3V3 ở mặt dưới), qua điện trở 1–10 kΩ nếu có.</li>
+          <li>Cắm cáp vào cổng có nối với <b>USART1</b> của chip: thử cổng <b>số 1</b> (qua cáp chéo) rồi cổng <b>số 3</b>. <b>Không</b> cắm cáp RS232 vào đầu trắng 4 chân.</li>
+          <li>Cấp nguồn lại (hoặc nhấn <b>RESET</b>), rồi bấm <b>Kết nối bootloader</b>.</li>
+          <li>Xong việc: tháo dây BOOT0, nhấn RESET để bo chạy chương trình như cũ.</li>
+        </ol>
+        <button class="btn" id="btnBlConnect" disabled>Kết nối bootloader</button>
+        <ul class="timeline" id="blSteps"></ul>
+        <div id="blInfo"></div>
+        <button class="btn new hidden" id="btnBlRead" style="margin-top:12px">Đọc toàn bộ chương trình</button>
+        <div id="blProg"></div>
+      </div>
+
+      <div class="card">
+        <div class="step-head"><span class="step-no" style="background:var(--text-2)">2</span><div><h3>Cách 2: qua 4 lỗ nạp (SWD) bằng máy tính</h3><small>Cần mạch nạp ST‑Link V2 (khoảng 60–150k)</small></div></div>
+        <ol style="margin:0;padding-left:20px;font-size:13.5px;line-height:1.6">
+          <li>Xác định 4 lỗ bằng đồng hồ đo thông mạch: <b>SWDIO</b> = chân <b>46</b> (PA13), <b>SWCLK</b> = chân <b>49</b> (PA14), <b>GND</b>, <b>3V3</b>.</li>
+          <li>Hàn 4 chân header vào 4 lỗ, nối sang ST‑Link: SWDIO↔SWDIO, SWCLK↔SWCLK, GND↔GND, 3V3↔3.3V. Bo vẫn dùng nguồn DC IN của nó.</li>
+          <li>Trên máy tính cài <b>STM32CubeProgrammer</b> (miễn phí từ ST) → chọn ST‑LINK → Connect (Mode: Under reset).</li>
+          <li>Thẻ <b>Memory &amp; File editing</b>: địa chỉ <span class="mono">0x08000000</span>, kích thước <span class="mono">0x40000</span> (256 KB) → Read → <b>Save As</b> file .bin. Lưu thêm thẻ <b>Option bytes</b> (ảnh chụp).</li>
+          <li>Nếu báo <b>“Read protection active”</b>: <b>dừng lại</b>. Không chỉnh RDP về Level 0, vì việc đó xóa sạch chương trình.</li>
+        </ol>
+      </div>
+    </section>
+
     <!-- ========== NGUỒN PHẦN MỀM ========== -->
     <section class="view" id="view-src">
       <div class="hint info"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg><div>Mỗi nguồn (phần mềm, tài liệu) được gán cho <b>Modem KNTT</b>, <b>Bộ điều khiển TT</b> hoặc cả hai. Bấm vào một nguồn để xem căn cứ và đổi lại nếu chưa đúng.</div></div>
@@ -524,6 +564,7 @@ details.adv summary::-webkit-details-marker{display:none}
   <nav id="nav">
     <button data-tab="ctrl" data-mode="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-home"/></svg>Tổng quan</button>
     <button data-tab="probe" data-mode="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-radar"/></svg>Dò</button>
+    <button data-tab="chip" data-mode="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chip"/></svg>Chip</button>
     <button data-tab="clone" data-mode="modem" class="active"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>Sao chép</button>
     <button data-tab="lib" data-mode="modem"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-lib"/></svg>Thư viện</button>
     <button data-tab="manual" data-mode="modem"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sliders"/></svg>Cài tay</button>
@@ -560,6 +601,12 @@ details.adv summary::-webkit-details-marker{display:none}
     <li><b>Bước 3 – Dò Modbus:</b> gửi lệnh <b>đọc</b> tới địa chỉ 1–16. Có "ID … trả lời" là bộ điều khiển dùng Modbus.</li>
     <li>Bấm <b>Sao chép kết quả</b> rồi gửi cho người hỗ trợ.</li>
     <li>Không có gì ở mọi bước: thử thêm <b>đầu null‑modem</b> (đổi chéo TX/RX) hoặc <b>cáp USB → RS485</b>.</li></ol></div></details>
+
+  <details><summary><span class="n">⌘</span>Đọc chương trình chip (sao lưu)</summary><div class="bd"><ul>
+    <li>Tab <b>Chip</b> (chế độ Bộ điều khiển TT): đọc toàn bộ flash STM32 qua bootloader có sẵn trong chip, rồi tải về file <code>.bin</code> kèm file thông tin.</li>
+    <li>Nối <b>BOOT0 (chân 60)</b> lên 3,3V, cấp nguồn lại, cắm cáp vào cổng nối USART1, rồi bấm Kết nối bootloader.</li>
+    <li>App <b>chỉ đọc</b>. Chip đã khóa đọc thì app dừng lại: <b>không gỡ khóa</b>, vì gỡ khóa sẽ xóa sạch chương trình.</li>
+    <li>Cách khác: dùng mạch nạp ST‑Link qua 4 lỗ SWD với STM32CubeProgrammer trên máy tính, xem hướng dẫn trong tab Chip.</li></ul></div></details>
 
   <details><summary><span class="n">1</span>Chuẩn bị</summary><div class="bd"><ul>
     <li>Điện thoại <b>Android</b> có <b>OTG</b>, mở bằng <b>Chrome</b>. iPhone không dùng được.</li>
@@ -703,7 +750,8 @@ class UsbSerial {
     }
     throw new Error("Không tìm thấy endpoint bulk");
   }
-  async open(baud){
+  async open(baud, parity = "none"){
+    this.parity = parity;
     const d = this.dev;
     await d.open();
     if (!d.configuration) await d.selectConfiguration(1);
@@ -725,7 +773,7 @@ class UsbSerial {
     await out(0xa1,0,0);
     await this.ch34xBaud(baud);
     await this.ctrlIn("vendor","device",0x95,0x2518,0,8);
-    await out(0x9a,0x2518,0x00c3);          // 8N1, bật RX/TX
+    await out(0x9a,0x2518,0x00c3 | (this.parity === "even" ? 0x18 : this.parity === "odd" ? 0x08 : 0)); // 8 bit, chẵn/lẻ, bật RX/TX
     await this.ctrlIn("vendor","device",0x95,0x0706,0,8);
     await out(0xa1,0x501f,0xd90a);
     await this.ch34xBaud(baud);
@@ -753,7 +801,7 @@ class UsbSerial {
     const v = (div | (f << 14)) & 0xffff;
     const iHi = (f >> 2) << 8;
     await out(0x03, v, (iHi) | idx);
-    await out(0x04, 0x0008, idx);            // 8N1
+    await out(0x04, 0x0008 | (this.parity === "odd" ? 0x100 : this.parity === "even" ? 0x200 : 0), idx); // 8 bit, chẵn/lẻ, 1 stop
     await out(0x01, 0x0303, idx);            // DTR/RTS
     this.ftdi = true;
   }
@@ -766,7 +814,7 @@ class UsbSerial {
     await this.ctrlOut("vendor","interface",0x00,0x0001,i);
     const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, baud, true);
     await this.ctrlOut("vendor","interface",0x1e,0,i,b);
-    await this.ctrlOut("vendor","interface",0x03,0x0800,i);
+    await this.ctrlOut("vendor","interface",0x03,0x0800 | (this.parity === "odd" ? 0x10 : this.parity === "even" ? 0x20 : 0),i);
     await this.ctrlOut("vendor","interface",0x07,0x0303,i);
   }
 
@@ -802,7 +850,7 @@ class UsbSerial {
   }
   async lineCoding(baud, iface){
     const lc = new Uint8Array(7); const dv = new DataView(lc.buffer);
-    dv.setUint32(0, baud, true); lc[4]=0; lc[5]=0; lc[6]=8;
+    dv.setUint32(0, baud, true); lc[4]=0; lc[5]=this.parity === "odd" ? 1 : this.parity === "even" ? 2 : 0; lc[6]=8;
     await this.ctrlOut("class","interface",0x20,0,iface,lc);
   }
 
@@ -831,7 +879,7 @@ class UsbSerial {
 /* --- Web Serial gốc (Android 17+/máy tính) --- */
 class NativeSerial {
   constructor(port){ this.port = port; this.type = "Web Serial"; }
-  async open(baud){ await this.port.open({baudRate:baud, dataBits:8, stopBits:1, parity:"none"}); this.writer = this.port.writable.getWriter(); }
+  async open(baud, parity = "none"){ await this.port.open({baudRate:baud, dataBits:8, stopBits:1, parity}); this.writer = this.port.writable.getWriter(); }
   async write(b){ await this.writer.write(b); }
   async readLoop(onData, onEnd){
     this.reading = true;
@@ -848,12 +896,12 @@ class NativeSerial {
 
 
 /* ============ Kết nối ============ */
-let link = null, busy = false, source = null, sourceName = "";
+let link = null, busy = false, source = null, sourceName = "", serialParity = "none";
 function refreshButtons(){
   const on = !!link;
   $("btnConn").disabled = busy;
   for (const id of ["btnReadOld","btnManualWrite","btnReadAny","btnReboot"]) $(id).disabled = !on || busy;
-  for (const id of ["btnQuick","btnListen","btnScan","btnModbus"]) $(id).disabled = !on || (busy && probeRun !== id);
+  for (const id of ["btnQuick","btnListen","btnScan","btnModbus","btnOtherProto","btnBlConnect"]) $(id).disabled = !on || (busy && probeRun !== id);
   $("btnWriteNew").disabled = !on || busy || !source;
   $("editToggle").disabled = !source || busy;
 }
@@ -867,8 +915,11 @@ function setConnected(on, title, sub){
 let hexView = false, lastRxT = 0, capture = null;
 const hexStr = u => Array.from(u, b => b.toString(16).padStart(2,"0").toUpperCase()).join(" ");
 const tstamp = () => { const d = new Date(); return d.toTimeString().slice(0,8) + "." + String(d.getMilliseconds()).padStart(3,"0"); };
+let rawSink = null, quietRx = false;
 function onRx(u){
   const now = performance.now();
+  if (rawSink) rawSink(u);
+  if (quietRx) return;
   if (capture) capture.push(now, u);
   const s = dec.decode(u); rxAll += s; if (rxAll.length > 200000) rxAll = rxAll.slice(-100000);
   if (hexView){ if (now - lastRxT > 60) termAdd("\n[" + tstamp() + "] ", "sys"); termAdd(hexStr(u) + " "); }
@@ -882,7 +933,8 @@ async function connect(){
     if ("usb" in navigator){ dev = await navigator.usb.requestDevice({filters: KNOWN}); link = new UsbSerial(dev); }
     else if ("serial" in navigator){ link = new NativeSerial(await navigator.serial.requestPort()); }
     else throw new Error("Trình duyệt không hỗ trợ USB");
-    await link.open(baud);
+    serialParity = "none";
+    await link.open(baud, serialParity);
     setConnected(true, "Đã kết nối · " + link.type, (dev ? (dev.productName || "USB‑Serial") : "Serial") + " · " + baud + " 8‑N‑1");
     sys("Đã mở cổng " + link.type + " " + baud + " 8N1"); toast("Đã kết nối cáp", "ok");
     link.readLoop(onRx, e => { sys("Mất kết nối: " + e.message); disconnect(); toast("Mất kết nối cáp", "err"); });
@@ -1009,7 +1061,7 @@ async function reopenPort(){
   const baud = +$("baud").value, old = link;
   const fresh = old instanceof UsbSerial ? new UsbSerial(old.dev) : new NativeSerial(old.port);
   await old.close(); await sleep(400);
-  link = fresh; await link.open(baud);
+  link = fresh; await link.open(baud, serialParity);
   link.readLoop(onRx, e => { sys("Mất kết nối: " + e.message); disconnect(); toast("Mất kết nối cáp", "err"); });
   sys("Đã mở lại cổng " + link.type + " " + baud);
 }
@@ -1437,7 +1489,7 @@ function findModbus(u){
 const probeLog = [];
 function plog(line){ probeLog.push(line); }
 let probeRun = null, probeStop = false;
-async function reopenAt(baud){ $("baud").value = String(baud); store.set("opt_baud", String(baud)); await reopenPort(); $("connSub").textContent = link.type + " · " + baud + " 8‑N‑1"; }
+async function reopenAt(baud, parity = "none"){ $("baud").value = String(baud); store.set("opt_baud", String(baud)); serialParity = parity; await reopenPort(); $("connSub").textContent = link.type + " · " + baud + " 8‑" + ({none:"N", even:"E", odd:"O"})[parity] + "‑1"; }
 
 /* 1) Nghe thụ động */
 $("btnListen").onclick = async () => {
@@ -1662,6 +1714,213 @@ $("btnQuick").onclick = async () => {
   }
 };
 { const cp = store.get("ctrlProto", ""); if (cp) $("ctrlProto").textContent = cp; }
+
+
+/* ===== Dò giao thức khác (chỉ lệnh đọc / hỏi) ===== */
+const te = s => new TextEncoder().encode(s);
+function mbAsciiLrc(bytes){ let s = 0; for (const b of bytes) s = (s + b) & 0xFF; return ((-s) & 0xFF).toString(16).toUpperCase().padStart(2,"0"); }
+const OTHER_PROBES = [
+  {name:'Chữ "hi" (như modem)', data: te("hi")},
+  {name:'Chữ "hi" + CR LF', data: te("hi\r\n")},
+  {name:'Chữ "?" + CR LF', data: te("?\r\n")},
+  {name:'Chữ "AT" + CR LF', data: te("AT\r\n")},
+  {name:'Chữ "help" + CR LF', data: te("help\r\n")},
+  {name:'Enter (CR LF)', data: te("\r\n")},
+  {name:'Modbus ASCII đọc ID 1', data: te(":010300000001" + mbAsciiLrc([1,3,0,0,0,1]) + "\r\n")},
+  {name:'Modbus ASCII đọc ID 255', data: te(":FF0300000001" + mbAsciiLrc([255,3,0,0,0,1]) + "\r\n")},
+  {name:'Modbus RTU hỏi tên thiết bị (FC 11, ID 1)', data: null, rtu: [1, 0x11]},
+  {name:'Modbus RTU đọc ID 247', data: null, rtu: [247,3,0,0,0,1]},
+  {name:'DL/T 645‑2007 hỏi địa chỉ (gửi chung)', data: new Uint8Array([0xFE,0xFE,0xFE,0xFE,0x68,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0x68,0x13,0x00,0xDF,0x16])},
+  {name:'IEC 62056‑21 hỏi nhận dạng', data: te("/?!\r\n")}
+];
+function dlt645Frame(u){
+  // khung DL/T 645: 68 A0..A5 68 C L DATA CS 16
+  for (let i = 0; i + 12 <= u.length; i++){
+    if (u[i] !== 0x68 || u[i+7] !== 0x68) continue;
+    const L = u[i+9], csAt = i + 10 + L;
+    if (csAt + 1 >= u.length || u[csAt+1] !== 0x16) continue;
+    let cs = 0; for (let k = i; k < csAt; k++) cs = (cs + u[k]) & 0xFF;
+    if (cs === u[csAt]) return u.slice(i, csAt + 2);
+  }
+  return null;
+}
+function judgeReply(p, u){
+  if (!u.length) return {ok:false, txt:"—"};
+  if (junkRatio(u) > .6 && printable(u) < .3) return {ok:false, txt:u.length + " byte rác"};
+  const echo = p.data && u.length >= p.data.length && hexStr(u.slice(0, p.data.length)) === hexStr(p.data) && u.length <= p.data.length + 2;
+  if (echo) return {ok:false, txt:"chỉ dội lại lệnh (echo)"};
+  const dl = dlt645Frame(u); if (dl) return {ok:true, txt:"✓ DL/T 645"};
+  if (findModbus(u).length) return {ok:true, txt:"✓ Modbus RTU"};
+  if (/^:[0-9A-F]+\r?\n?/i.test(asciiOf(u))) return {ok:true, txt:"✓ Modbus ASCII"};
+  if (printable(u) > .7) return {ok:true, txt:"✓ chữ: " + asciiOf(u).replace(/·/g," ").trim().slice(0,40)};
+  return {ok:true, txt:"✓ " + u.length + " byte lạ"};
+}
+$("btnOtherProto").onclick = async () => {
+  if (probeRun === "btnOtherProto"){ probeStop = true; return; }
+  if (busy) return;
+  probeRun = "btnOtherProto"; probeStop = false; await busyOn(); $("btnOtherProto").textContent = "■ Dừng";
+  const all = $("opAllBaud").checked, orig = +$("baud").value;
+  const bauds = all ? BAUDS : [orig];
+  const tb = $("opTable"); tb.innerHTML = "<tr><th>Lệnh thử</th><th>Baud</th><th>Bo trả lời</th></tr>"; $("opResult").innerHTML = "";
+  const hits = [];
+  plog(`[Giao thức khác] bắt đầu ${tstamp()}, tốc độ: ${bauds.join(", ")}`);
+  try{
+    for (const b of bauds){
+      if (probeStop || !link) break;
+      if (all || b !== orig) await reopenAt(b);
+      for (const p of OTHER_PROBES){
+        if (probeStop || !link) break;
+        const tr = document.createElement("tr"); tr.className = "run"; tr.innerHTML = `<td style="font-family:inherit;font-weight:500">${esc(p.name)}</td><td>${b}</td><td>…</td>`; tb.appendChild(tr);
+        const data = p.data || withCrc(new Uint8Array(p.rtu));
+        capture = makeCapture(); await sendBytes(data);
+        await sleep(Math.max(500, waitFor_(b) * 3));
+        const u = capture.bytes(); capture = null;
+        const j = judgeReply({data}, u);
+        tr.className = j.ok ? "best" : ""; tr.children[2].textContent = j.txt;
+        plog(`  ${p.name} @${b}: ${u.length ? hexStr(u.slice(0,32)) : "im lặng"}  → ${j.txt}`);
+        if (j.ok) hits.push({p, b, u, j});
+      }
+    }
+  }catch(e){ toast(e.message, "err"); }
+  finally{
+    capture = null;
+    if (all && link) await reopenAt(orig).catch(()=>{});
+    $("opResult").innerHTML = hits.length
+      ? resultBox(true, `Bo có trả lời ${hits.length} kiểu lệnh`, hits.slice(0,4).map(h => `<b style="display:inline">${esc(h.p.name)}</b> @${h.b}: <span class="mono">${esc(hexStr(h.u.slice(0,24)))}</span>`).join("<br>") + "<br>Bấm <b>Sao chép kết quả</b> và gửi để giải mã.")
+      : resultBox(false, "Không kiểu lệnh nào được trả lời", "Bo dùng lệnh riêng. Cần tài liệu Minh Sáng, file ghi trên máy chủ (Wireshark), hoặc đọc chương trình ở tab <b>Chip</b>.");
+    plog(`[Giao thức khác] ${hits.length} kiểu có trả lời`);
+    probeRun = null; $("btnOtherProto").textContent = "Dò giao thức khác"; busyOff();
+  }
+};
+
+/* ===== Bootloader STM32 (AN3155) – CHỈ ĐỌC ===== */
+// Chỉ dùng các lệnh: 0x7F (đồng bộ), 0x00 Get, 0x01 Get Version, 0x02 Get ID, 0x11 Read Memory.
+// KHÔNG có: 0x31 Write, 0x43/0x44 Erase, 0x63/0x73 Write protect, 0x82 Readout Protect, 0x92 Readout Unprotect.
+const ACK = 0x79, NACK = 0x1F;
+let blBuf = [], blWaiters = [], blInfo = null, blImage = null;
+function blStart(){ blBuf = []; rawSink = u => { for (const b of u) blBuf.push(b); }; quietRx = true; }
+function blStop(){ rawSink = null; quietRx = false; }
+async function blRead(n, ms = 1000){
+  const t = Date.now() + ms;
+  while (blBuf.length < n){ if (Date.now() > t) throw new Error("hết thời gian chờ"); if (!link) throw new Error("mất kết nối"); await sleep(5); }
+  return blBuf.splice(0, n);
+}
+async function blAck(ms = 1000){ const [b] = await blRead(1, ms); if (b === ACK) return true; if (b === NACK) return false; throw new Error("phản hồi lạ 0x" + b.toString(16)); }
+async function blCmd(c, ms){ blBuf = []; await link.write(new Uint8Array([c, c ^ 0xFF])); return blAck(ms); }
+async function blSync(){
+  blBuf = []; await link.write(new Uint8Array([0x7F]));
+  try{ const [b] = await blRead(1, 400); return b === ACK || b === NACK; }catch(e){ return false; }
+}
+async function blReadMem(addr, n){
+  if (!await blCmd(0x11)) return null;              // NACK: chip khóa đọc
+  const a = [(addr >>> 24) & 0xFF, (addr >>> 16) & 0xFF, (addr >>> 8) & 0xFF, addr & 0xFF];
+  await link.write(new Uint8Array([...a, a[0] ^ a[1] ^ a[2] ^ a[3]]));
+  if (!await blAck()) throw new Error("địa chỉ bị từ chối 0x" + addr.toString(16));
+  await link.write(new Uint8Array([n - 1, (n - 1) ^ 0xFF]));
+  if (!await blAck()) throw new Error("số byte bị từ chối");
+  return new Uint8Array(await blRead(n, 1500));
+}
+const PIDS = {0x410:"STM32F10x medium‑density", 0x412:"STM32F10x low‑density", 0x414:"STM32F10x high‑density (F103RC/RE…)", 0x418:"STM32F105/107", 0x420:"STM32F100 value line", 0x430:"STM32F10x XL‑density"};
+$("btnBlConnect").onclick = async () => {
+  if (busy) return;
+  await busyOn(); $("blInfo").innerHTML = ""; $("btnBlRead").classList.add("hidden"); blInfo = null;
+  const L = stepList($("blSteps"), ["Đồng bộ bootloader (8‑E‑1)", "Đọc phiên bản & mã chip", "Kiểm tra khóa đọc, dung lượng flash"]);
+  const origBaud = +$("baud").value;
+  plog(`[Bootloader] bắt đầu ${tstamp()}`);
+  try{
+    L[0].className = "run"; let baud = null;
+    for (const b of [115200, 57600, 38400, 19200, 9600]){
+      L[0].textContent = `Đồng bộ bootloader: thử ${b} 8‑E‑1…`;
+      await reopenAt(b, "even"); await sleep(150); blStart();
+      let ok = false; for (let k = 0; k < 3 && !ok; k++) ok = await blSync();
+      if (ok){ baud = b; break; }
+      blStop();
+    }
+    if (!baud){
+      L[0].className = "bad"; L[0].textContent = "Không thấy bootloader";
+      $("blInfo").innerHTML = resultBox(false, "Chưa vào được bootloader", "Kiểm tra: BOOT0 đã nối 3,3V chưa, đã cấp nguồn lại hoặc nhấn RESET sau khi nối chưa, cáp có đúng cổng nối USART1 không (thử cổng 1 qua cáp chéo, rồi cổng 3). USART1 cũng có thể chỉ đi ra đầu trắng 4 chân ở mức TTL: khi đó cần cáp USB → TTL 3,3V.");
+      plog("[Bootloader] không đồng bộ được"); return;
+    }
+    L[0].className = "ok"; L[0].textContent = `Bootloader trả lời ở ${baud} 8‑E‑1`;
+    L[1].className = "run";
+    let ver = "?", cmds = [], pid = null;
+    if (await blCmd(0x00)){ const [n] = await blRead(1); const d = await blRead(n + 1); ver = (d[0] >> 4) + "." + (d[0] & 15); cmds = d.slice(1); await blAck(); }
+    if (await blCmd(0x02)){ const [n] = await blRead(1); const d = await blRead(n + 1); pid = (d[0] << 8) | d[1]; await blAck(); }
+    L[1].className = "ok"; L[1].textContent = `Bootloader v${ver} · PID 0x${pid != null ? pid.toString(16).padStart(3,"0") : "?"}`;
+    L[2].className = "run";
+    const fs = await blReadMem(0x1FFFF7E0, 2);
+    if (!fs){
+      L[2].className = "bad"; L[2].textContent = "Chip đã KHÓA ĐỌC (RDP)";
+      $("blInfo").innerHTML = resultBox(false, "Chip đã khóa đọc – dừng lại", "Không đọc được chương trình qua bootloader và cũng không đọc được qua SWD. <b>Không gỡ khóa</b>: gỡ khóa sẽ xóa sạch flash. Tháo dây BOOT0 và nhấn RESET để bo chạy lại bình thường.");
+      plog(`[Bootloader] v${ver} PID 0x${pid?.toString(16)} – KHÓA ĐỌC`); return;
+    }
+    const kb = fs[0] | (fs[1] << 8);
+    const uid = await blReadMem(0x1FFFF7E8, 12);
+    const ob = await blReadMem(0x1FFFF800, 16);
+    blInfo = {baud, ver, pid, kb, uid: uid ? hexStr(uid) : "", ob: ob ? hexStr(ob) : "", cmds: hexStr(new Uint8Array(cmds))};
+    L[2].className = "ok"; L[2].textContent = `Không khóa đọc · flash ${kb} KB`;
+    $("blInfo").innerHTML = `<table class="cmp qk"><tbody>
+      <tr><th>Chip</th><td>${esc(PIDS[pid] || "PID 0x" + pid?.toString(16))}</td></tr>
+      <tr><th>Flash</th><td>${kb} KB</td></tr>
+      <tr><th>Bootloader</th><td>v${esc(ver)} @ ${baud}</td></tr>
+      <tr><th>UID</th><td>${esc(blInfo.uid)}</td></tr>
+      <tr><th>Option bytes</th><td>${esc(blInfo.ob)}</td></tr></tbody></table>`;
+    $("btnBlRead").classList.remove("hidden");
+    plog(`[Bootloader] v${ver} PID 0x${pid?.toString(16)} flash ${kb}KB UID ${blInfo.uid} OB ${blInfo.ob}`);
+    toast("Đã vào bootloader – có thể đọc chương trình", "ok");
+  }catch(e){
+    $("blInfo").innerHTML = resultBox(false, "Lỗi bootloader", esc(e.message) + ". Nhấn RESET (BOOT0 vẫn nối 3,3V) rồi thử lại.");
+    plog("[Bootloader] lỗi: " + e.message);
+  }finally{
+    if (!blInfo){ blStop(); if (link) await reopenAt(origBaud).catch(()=>{}); }
+    busyOff();
+  }
+};
+function crc32(u){ let c, t = crc32.t || (crc32.t = Array.from({length:256}, (_, n) => { c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; })); let r = 0xFFFFFFFF; for (const b of u) r = t[(r ^ b) & 0xFF] ^ (r >>> 8); return (r ^ 0xFFFFFFFF) >>> 0; }
+function downloadBlob(data, name, type){ const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], {type})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000); }
+$("btnBlRead").onclick = async () => {
+  if (probeRun === "btnBlRead"){ probeStop = true; return; }
+  if (busy || !blInfo) return;
+  probeRun = "btnBlRead"; probeStop = false; await busyOn(); $("btnBlRead").disabled = false; $("btnBlRead").textContent = "■ Dừng đọc";
+  const size = blInfo.kb * 1024, img = new Uint8Array(size), t0 = Date.now();
+  const prog = $("blProg");
+  prog.innerHTML = `<div style="margin-top:12px;height:10px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden"><div id="blBar" style="height:100%;width:0;background:var(--new);transition:width .2s"></div></div><div class="desc" id="blPct" style="margin-top:6px">0%</div>`;
+  let done = 0;
+  try{
+    for (let off = 0; off < size && !probeStop; off += 256){
+      let chunk = null;
+      for (let tries = 0; tries < 3 && !chunk; tries++){
+        try{ chunk = await blReadMem(0x08000000 + off, Math.min(256, size - off)); if (!chunk) throw new Error("chip từ chối đọc"); }
+        catch(e){ if (tries === 2) throw e; await sleep(300); blBuf = []; chunk = null; }
+      }
+      img.set(chunk, off); done = off + chunk.length;
+      if ((off & 0xFFF) === 0 || done === size){
+        const pct = Math.round(done / size * 100), sec = (Date.now() - t0) / 1000, left = done ? Math.round(sec / done * (size - done)) : 0;
+        $("blBar").style.width = pct + "%"; $("blPct").textContent = `${pct}% · ${Math.round(done/1024)}/${blInfo.kb} KB · còn khoảng ${left}s`;
+      }
+    }
+    if (done < size) throw new Error("đã dừng ở " + Math.round(done/1024) + " KB");
+    // phần dùng thật (bỏ các byte 0xFF cuối flash)
+    let used = size; while (used > 0 && img[used-1] === 0xFF) used--;
+    const crc = crc32(img).toString(16).toUpperCase().padStart(8,"0");
+    blImage = img;
+    const stamp = new Date().toISOString().slice(0,10);
+    const base = `CONNECT-232-485_STM32F103RC_${stamp}`;
+    downloadBlob(img, base + ".bin", "application/octet-stream");
+    downloadBlob(JSON.stringify(Object.assign({board:"CONNECT-232-485 V8.0", readAt:new Date().toISOString(), bytes:size, usedBytes:used, crc32:crc}, blInfo), null, 2), base + "_info.json", "application/json");
+    prog.innerHTML = resultBox(true, "Đã đọc xong chương trình", `${blInfo.kb} KB, phần có dữ liệu khoảng ${Math.round(used/1024)} KB · CRC32 <span class="mono">${crc}</span>.<br>Đã tải về <b>${base}.bin</b> và file thông tin <b>_info.json</b>. Cất giữ cẩn thận: đây là bản sao lưu để khôi phục.`);
+    plog(`[Bootloader] ĐÃ ĐỌC ${size} byte, dùng ${used}, CRC32 ${crc}`);
+    try{ navigator.vibrate?.([80,60,80]); }catch(e){}
+    toast("Đọc xong – đã tải file .bin", "ok");
+  }catch(e){
+    prog.innerHTML = resultBox(false, "Đọc chưa xong", esc(e.message) + ". Nhấn RESET (giữ BOOT0 nối 3,3V), bấm Kết nối bootloader rồi đọc lại.");
+    plog("[Bootloader] đọc lỗi: " + e.message);
+  }finally{
+    blStop(); probeRun = null; $("btnBlRead").textContent = "Đọc toàn bộ chương trình"; busyOff();
+    blInfo = null; $("btnBlRead").classList.add("hidden");
+    if (link) await reopenAt(9600).catch(()=>{});
+  }
+};
 
 const probeText = () => `== Dò bộ điều khiển ${new Date().toLocaleString("vi-VN",{hour12:false})} ==\n` + probeLog.join("\n");
 $("btnProbeNote").onclick = () => { if (!probeLog.length) return toast("Chưa có kết quả dò"); $("ctrlNotes").value = ($("ctrlNotes").value ? $("ctrlNotes").value + "\n\n" : "") + probeText(); store.set("ctrlNotes", $("ctrlNotes").value); toast("Đã lưu vào Sổ tay", "ok"); };
