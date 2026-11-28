@@ -245,6 +245,22 @@ nav button.active::after{transform:rotate(-45deg) scale(1)}
 .assign{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
 .assign button{padding:10px 6px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-size:13px;font-weight:700;cursor:pointer}
 .assign button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--text)}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stat3 div{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:8px 10px}
+.stat3 b{display:block;font-size:18px;font-weight:700;font-family:"IBM Plex Mono",monospace}
+.stat3 small{font-size:11px;color:var(--text-2)}
+.frames{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--term-bg);color:var(--term-ink);border-radius:10px;padding:8px 10px;max-height:240px;overflow:auto;line-height:1.55;word-break:break-all}
+.frames:empty{display:none}
+.frames .t{color:#F2B705}.frames .n{color:#7CC4FF}.frames .a{color:#9FB0BF}
+.scan{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+.scan th,.scan td{padding:7px 5px;border-bottom:1px solid var(--border);text-align:left}
+.scan th{font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+.scan td{font-family:"IBM Plex Mono",monospace;font-weight:600}
+.scan tr.best td{color:var(--done)}
+.scan tr.run td{color:var(--accent)}
+.chk{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text);cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.chks{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px}
 .ov-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px}
 .ov-row:last-child{border-bottom:none}
 .ov-row .k{color:var(--text-2);flex:0 0 42%}
@@ -275,6 +291,7 @@ details.adv summary::-webkit-details-marker{display:none}
   <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/></symbol>
+  <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18.5 5.5"/><circle cx="12" cy="12" r="1.2"/></symbol>
   <symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/></symbol>
 </svg>
 
@@ -417,7 +434,7 @@ details.adv summary::-webkit-details-marker{display:none}
       <div class="sec-title">Nguồn dùng cho bộ điều khiển</div>
       <div id="ctrlSrcList"></div>
       <div class="btn-row" style="margin-top:6px">
-        <button class="btn ghost sm" id="btnCtrlTerm">Mở Terminal</button>
+        <button class="btn ghost sm" id="btnCtrlTerm">Mở công cụ Dò</button>
         <button class="btn sm" id="btnCtrlAddSrc">+ Thêm nguồn</button>
       </div>
       <div class="sec-title" style="margin-top:20px">Sổ tay bộ điều khiển</div>
@@ -425,6 +442,45 @@ details.adv summary::-webkit-details-marker{display:none}
         <div class="field"><label>Ghi chú: model, tốc độ cổng, lệnh đã thử, kết quả…</label>
           <textarea id="ctrlNotes" rows="6" style="width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;resize:vertical;line-height:1.5" placeholder="vd: Bộ ĐK Minh Sáng MS-xxx, cổng RS232 9600 8N1, gửi 'hi' không phản hồi…"></textarea></div>
         <div class="help" style="font-size:11.5px;color:var(--text-2)">Tự lưu trên điện thoại. Gửi nội dung này cùng log Terminal để mình viết phần đọc/nạp cho bộ điều khiển.</div>
+      </div>
+    </section>
+
+    <!-- ========== DÒ BỘ ĐIỀU KHIỂN ========== -->
+    <section class="view" id="view-probe">
+      <div class="hint warn"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg><div>Cáp cắm vào <b>cổng nối với modem</b> trên bộ điều khiển. Làm theo thứ tự <b>1 → 2 → 3</b>. Bước 1 và 2 chỉ nghe; bước 3 chỉ gửi lệnh <b>đọc</b>, không ghi hay điều khiển đèn.</div></div>
+
+      <div class="card">
+        <div class="step-head"><span class="step-no old">1</span><div><h3>Nghe thụ động</h3><small>Không gửi gì, xem bộ điều khiển có tự phát dữ liệu</small></div></div>
+        <button class="btn" id="btnListen" disabled>▶ Bắt đầu nghe</button>
+        <div class="stat3"><div><b id="lsBytes">0</b><small>byte nhận</small></div><div><b id="lsFrames">0</b><small>gói tin</small></div><div><b id="lsTime">0s</b><small>thời gian</small></div></div>
+        <div class="frames" id="lsList"></div>
+      </div>
+
+      <div class="card">
+        <div class="step-head"><span class="step-no old">2</span><div><h3>Quét tốc độ cổng</h3><small>Thử lần lượt các baud, tìm tốc độ có dữ liệu hợp lệ</small></div></div>
+        <div class="grid2">
+          <div class="field"><label>Cách thử</label><select id="scProbe"><option value="none">Chỉ nghe</option><option value="modbus">Gửi lệnh đọc Modbus (ID 1–10)</option><option value="hi">Gửi "hi"</option></select></div>
+          <div class="field"><label>Mỗi tốc độ</label><select id="scSec"><option value="3">3 giây</option><option value="5" selected>5 giây</option><option value="10">10 giây</option><option value="30">30 giây</option></select></div>
+        </div>
+        <button class="btn" id="btnScan" disabled>Quét tốc độ</button>
+        <table class="scan" id="scTable"></table>
+      </div>
+
+      <div class="card">
+        <div class="step-head"><span class="step-no new">3</span><div><h3>Dò Modbus RTU (chỉ đọc)</h3><small>Hỏi từng địa chỉ thiết bị bằng lệnh đọc thanh ghi</small></div></div>
+        <div class="grid2">
+          <div class="field"><label>Địa chỉ từ</label><input id="mbFrom" class="mono" inputmode="numeric" value="1"></div>
+          <div class="field"><label>đến</label><input id="mbTo" class="mono" inputmode="numeric" value="16"></div>
+          <div class="field"><label>Lệnh</label><select id="mbFc"><option value="3">03 – Holding</option><option value="4">04 – Input</option><option value="1">01 – Coil</option><option value="2">02 – Discrete</option></select></div>
+          <div class="field"><label>Thanh ghi bắt đầu / số lượng</label><input id="mbReg" class="mono" value="0/2"></div>
+        </div>
+        <button class="btn new" id="btnModbus" disabled>Dò Modbus</button>
+        <div class="frames" id="mbList" style="margin-top:10px"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn ghost sm" id="btnProbeNote">Lưu kết quả vào Sổ tay</button>
+        <button class="btn ghost sm" id="btnProbeCopy">Sao chép kết quả</button>
       </div>
     </section>
 
@@ -442,7 +498,12 @@ details.adv summary::-webkit-details-marker{display:none}
           <div class="field" style="margin:0"><label>Tốc độ (baud)</label><select id="baud"><option>1200</option><option>2400</option><option>4800</option><option selected>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></div>
           <div class="field" style="margin:0"><label>Kết thúc lệnh</label><select id="eol"><option value="auto">Tự dò</option><option value="">Không</option><option value="\r">CR</option><option value="\r\n">CR+LF</option><option value="\n">LF</option></select></div>
         </div>
-        <div class="help" style="font-size:11.5px;color:var(--text-2);margin-top:6px">Đổi tốc độ → bấm Ngắt rồi Kết nối lại để áp dụng. Modem KNTT dùng 9600.</div>
+        <div class="chks">
+          <label class="chk"><input type="checkbox" id="optHexView">Hiển thị HEX</label>
+          <label class="chk"><input type="checkbox" id="optHexSend">Gửi dạng HEX</label>
+          <label class="chk"><input type="checkbox" id="optCrc">Tự thêm CRC Modbus</label>
+        </div>
+        <div class="help" style="font-size:11.5px;color:var(--text-2);margin-top:6px">Đổi tốc độ → bấm Ngắt rồi Kết nối lại để áp dụng. Modem KNTT dùng 9600. Gửi HEX: gõ <span class="mono">01 03 00 00 00 01</span>.</div>
       </div>
       <div id="term"></div>
       <div class="quick"><button data-send="hi">hi</button><button data-send="1">1</button><button data-send="2">2</button><button data-send="3">3</button></div>
@@ -453,6 +514,7 @@ details.adv summary::-webkit-details-marker{display:none}
 
   <nav id="nav">
     <button data-tab="ctrl" data-mode="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-home"/></svg>Tổng quan</button>
+    <button data-tab="probe" data-mode="ctrl"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-radar"/></svg>Dò</button>
     <button data-tab="clone" data-mode="modem" class="active"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>Sao chép</button>
     <button data-tab="lib" data-mode="modem"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-lib"/></svg>Thư viện</button>
     <button data-tab="manual" data-mode="modem"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sliders"/></svg>Cài tay</button>
@@ -479,6 +541,15 @@ details.adv summary::-webkit-details-marker{display:none}
     <li>Dùng công tắc trên đầu trang để chọn <b>Modem KNTT</b> (module 4G gửi dữ liệu về trung tâm) hoặc <b>Bộ điều khiển TT</b> (tủ điều khiển chiếu sáng).</li>
     <li>Tab <b>Nguồn</b> liệt kê các phần mềm, tài liệu đã nhận và cho biết mỗi thứ dùng cho thiết bị nào, kèm căn cứ. Bấm vào một nguồn để gán lại nếu chưa đúng.</li>
     <li>Các mục 1–10 bên dưới là hướng dẫn cho <b>Modem KNTT</b>. Phần đọc/nạp cho bộ điều khiển sẽ có khi có phần mềm hoặc tài liệu của bộ điều khiển. Trong lúc chờ, dùng Terminal và Sổ tay để ghi lại kết quả thử.</li></ul></div></details>
+
+  <details><summary><span class="n">◎</span>Dò bộ điều khiển trung tâm</summary><div class="bd"><ol>
+    <li>Rút cáp DB9 đang nối bộ điều khiển với <b>modem</b>, cắm cáp điện thoại vào cổng đó trên bộ điều khiển.</li>
+    <li>Chọn <b>Bộ điều khiển TT</b> → tab <b>Dò</b> → bấm <b>Kết nối</b>.</li>
+    <li><b>Bước 1 – Nghe:</b> để 1–2 phút. Có gói tin là đã thông.</li>
+    <li><b>Bước 2 – Quét tốc độ:</b> app thử 9600, 19200, 4800… Tốc độ nào có dữ liệu sẽ tô xanh, và app tự chuyển sang tốc độ đó.</li>
+    <li><b>Bước 3 – Dò Modbus:</b> gửi lệnh <b>đọc</b> tới địa chỉ 1–16. Có "ID … trả lời" là bộ điều khiển dùng Modbus.</li>
+    <li>Bấm <b>Sao chép kết quả</b> rồi gửi cho người hỗ trợ.</li>
+    <li>Không có gì ở mọi bước: thử thêm <b>đầu null‑modem</b> (đổi chéo TX/RX) hoặc <b>cáp USB → RS485</b>.</li></ol></div></details>
 
   <details><summary><span class="n">1</span>Chuẩn bị</summary><div class="bd"><ul>
     <li>Điện thoại <b>Android</b> có <b>OTG</b>, mở bằng <b>Chrome</b>. iPhone không dùng được.</li>
@@ -772,6 +843,7 @@ function refreshButtons(){
   const on = !!link;
   $("btnConn").disabled = busy;
   for (const id of ["btnReadOld","btnManualWrite","btnReadAny","btnReboot"]) $(id).disabled = !on || busy;
+  for (const id of ["btnListen","btnScan","btnModbus"]) $(id).disabled = !on || (busy && probeRun !== id);
   $("btnWriteNew").disabled = !on || busy || !source;
   $("editToggle").disabled = !source || busy;
 }
@@ -782,7 +854,17 @@ function setConnected(on, title, sub){
   $("btnConn").textContent = on ? "Ngắt" : "Kết nối";
   refreshButtons();
 }
-function onRx(u){ const s = dec.decode(u); rxAll += s; if (rxAll.length > 200000) rxAll = rxAll.slice(-100000); termAdd(s); }
+let hexView = false, lastRxT = 0, capture = null;
+const hexStr = u => Array.from(u, b => b.toString(16).padStart(2,"0").toUpperCase()).join(" ");
+const tstamp = () => { const d = new Date(); return d.toTimeString().slice(0,8) + "." + String(d.getMilliseconds()).padStart(3,"0"); };
+function onRx(u){
+  const now = performance.now();
+  if (capture) capture.push(now, u);
+  const s = dec.decode(u); rxAll += s; if (rxAll.length > 200000) rxAll = rxAll.slice(-100000);
+  if (hexView){ if (now - lastRxT > 60) termAdd("\n[" + tstamp() + "] ", "sys"); termAdd(hexStr(u) + " "); }
+  else termAdd(s);
+  lastRxT = now;
+}
 async function connect(){
   const baud = +$("baud").value;
   try{
@@ -816,7 +898,22 @@ async function send(text, eol){
 }
 async function sendUI(t){ try{ await send(t); }catch(e){ termAdd("\n[Lỗi] " + e.message + "\n","er"); toast(e.message, "err"); } }
 document.querySelectorAll("[data-send]").forEach(b => b.onclick = () => sendUI(b.dataset.send));
-$("btnSend").onclick = () => { const t = $("txt").value; if (!t) return; sendUI(t); $("txt").value = ""; };
+$("btnSend").onclick = async () => {
+  const t = $("txt").value; if (!t) return;
+  if ($("optHexSend").checked){
+    const h = t.replace(/0x/gi,"").replace(/[^0-9a-f]/gi,"");
+    if (!h || h.length % 2) return toast("Chuỗi HEX không hợp lệ", "err");
+    let u = new Uint8Array(h.match(/../g).map(x => parseInt(x,16)));
+    if ($("optCrc").checked) u = withCrc(u);
+    try{ await sendBytes(u); $("txt").value = ""; }catch(e){ toast(e.message, "err"); }
+    return;
+  }
+  sendUI(t); $("txt").value = "";
+};
+$("optHexView").checked = hexView = store.get("hexView", false);
+$("optHexView").onchange = () => { hexView = $("optHexView").checked; store.set("hexView", hexView); };
+$("optHexSend").checked = store.get("hexSend", false); $("optHexSend").onchange = () => store.set("hexSend", $("optHexSend").checked);
+$("optCrc").checked = store.get("hexCrc", true); $("optCrc").onchange = () => store.set("hexCrc", $("optCrc").checked);
 $("txt").addEventListener("keydown", e => { if (e.key === "Enter") $("btnSend").click(); });
 $("btnClear").onclick = () => { term.textContent = ""; };
 $("btnCopy").onclick = async () => { try{ await navigator.clipboard.writeText(term.textContent); toast("Đã sao chép log", "ok"); }catch(e){ toast("Không sao chép được", "err"); } };
@@ -1292,9 +1389,170 @@ async function addOrEditSource(s){
 document.addEventListener("click", e => { const c = e.target.closest(".src-card"); if (c) openSource(c.dataset.src); });
 $("btnAddSrc").onclick = () => addOrEditSource(null);
 $("btnCtrlAddSrc").onclick = () => addOrEditSource(null);
-$("btnCtrlTerm").onclick = () => showTab("term");
+$("btnCtrlTerm").onclick = () => showTab("probe");
 $("ctrlNotes").value = store.get("ctrlNotes", "");
 $("ctrlNotes").addEventListener("input", () => store.set("ctrlNotes", $("ctrlNotes").value));
+
+
+/* ============ Dò bộ điều khiển ============ */
+function crc16(u){ let c = 0xFFFF; for (const b of u){ c ^= b; for (let i = 0; i < 8; i++) c = (c & 1) ? (c >>> 1) ^ 0xA001 : c >>> 1; } return c; }
+function withCrc(u){ const c = crc16(u); const o = new Uint8Array(u.length + 2); o.set(u); o[u.length] = c & 0xFF; o[u.length+1] = c >> 8; return o; }
+async function sendBytes(u){ if (!link) throw new Error("Chưa kết nối cáp"); termAdd("\n» " + hexStr(u) + "\n", "tx"); await link.write(u); }
+function makeCapture(){
+  return { chunks: [], push(t, u){ this.chunks.push({t, u: new Uint8Array(u)}); },
+    bytes(){ const n = this.chunks.reduce((a,c) => a + c.u.length, 0); const o = new Uint8Array(n); let k = 0; for (const c of this.chunks){ o.set(c.u, k); k += c.u.length; } return o; },
+    frames(gap = 30){ const out = []; for (const c of this.chunks){ const last = out[out.length-1]; if (last && c.t - last.end <= gap){ last.parts.push(c.u); last.end = c.t; } else out.push({t0: c.t, end: c.t, at: new Date(), parts: [c.u]}); }
+      return out.map(f => { const n = f.parts.reduce((a,p) => a + p.length, 0); const u = new Uint8Array(n); let k = 0; for (const p of f.parts){ u.set(p, k); k += p.length; } return {at: f.at, u}; }); } };
+}
+// byte rác do sai tốc độ: chủ yếu 00 / FF / F8 / FE / 80 / E0 / F0
+const junkRatio = u => u.length ? Array.from(u).filter(b => [0x00,0xFF,0xF8,0xFE,0xFC,0x80,0xE0,0xF0,0xC0].includes(b)).length / u.length : 0;
+const printable = u => u.length ? Array.from(u).filter(b => (b >= 32 && b < 127) || b === 10 || b === 13).length / u.length : 0;
+const asciiOf = u => Array.from(u, b => (b >= 32 && b < 127) ? String.fromCharCode(b) : "·").join("");
+function findModbus(u){
+  // tìm khung phản hồi Modbus RTU có CRC đúng
+  const res = [];
+  for (let i = 0; i + 5 <= u.length; i++){
+    const id = u[i], fc = u[i+1];
+    if (id < 1 || id > 247) continue;
+    let len = 0;
+    if ([1,2,3,4].includes(fc) && i + 3 <= u.length) len = 3 + u[i+2] + 2;
+    else if ([0x81,0x82,0x83,0x84].includes(fc)) len = 5;
+    else if ([5,6,15,16].includes(fc)) len = 8;
+    if (!len || i + len > u.length) continue;
+    const body = u.subarray(i, i + len - 2), c = crc16(body);
+    if (u[i+len-2] === (c & 0xFF) && u[i+len-1] === (c >> 8)){ res.push({id, fc, frame: u.slice(i, i+len)}); i += len - 1; }
+  }
+  return res;
+}
+const probeLog = [];
+function plog(line){ probeLog.push(line); }
+let probeRun = null, probeStop = false;
+async function reopenAt(baud){ $("baud").value = String(baud); store.set("opt_baud", String(baud)); await reopenPort(); $("connSub").textContent = link.type + " · " + baud + " 8‑N‑1"; }
+
+/* 1) Nghe thụ động */
+$("btnListen").onclick = async () => {
+  if (probeRun === "btnListen"){ probeStop = true; return; }
+  if (busy) return;
+  probeRun = "btnListen"; probeStop = false; await busyOn();
+  $("btnListen").textContent = "■ Dừng nghe"; $("lsList").innerHTML = "";
+  capture = makeCapture(); const t0 = Date.now(); let shown = 0;
+  plog(`[Nghe] bắt đầu ${tstamp()} @ ${$("baud").value} baud`);
+  try{
+    while (!probeStop && link){
+      await sleep(250);
+      const fr = capture.frames(30);
+      $("lsBytes").textContent = capture.bytes().length; $("lsFrames").textContent = fr.length;
+      $("lsTime").textContent = Math.round((Date.now() - t0) / 1000) + "s";
+      for (; shown < fr.length; shown++){
+        const f = fr[shown], mb = findModbus(f.u);
+        const div = document.createElement("div");
+        div.innerHTML = `<span class="t">${f.at.toTimeString().slice(0,8)}</span> <span class="n">[${f.u.length}]</span> ${esc(hexStr(f.u))}${mb.length ? ` <b style="color:#4CC382">Modbus ID ${mb[0].id}</b>` : ""}<br><span class="a">${esc(asciiOf(f.u))}</span>`;
+        $("lsList").appendChild(div); $("lsList").scrollTop = $("lsList").scrollHeight;
+        plog(`  ${f.at.toTimeString().slice(0,8)} [${f.u.length}] ${hexStr(f.u)}`);
+      }
+    }
+  }finally{
+    const n = capture.bytes().length;
+    plog(`[Nghe] dừng sau ${Math.round((Date.now()-t0)/1000)}s: ${n} byte, ${capture.frames(30).length} gói`);
+    if (!n) $("lsList").innerHTML = `<div class="a">Không nhận được byte nào. Bộ điều khiển chỉ trả lời khi được hỏi → làm bước 2/3, hoặc kiểm tra đầu đổi chéo TX/RX (null‑modem), cáp RS485.</div>`;
+    capture = null; probeRun = null; $("btnListen").textContent = "▶ Bắt đầu nghe"; busyOff();
+  }
+};
+
+/* 2) Quét tốc độ */
+const BAUDS = [9600, 19200, 4800, 38400, 57600, 115200, 2400, 1200];
+$("btnScan").onclick = async () => {
+  if (probeRun === "btnScan"){ probeStop = true; return; }
+  if (busy) return;
+  const mode = $("scProbe").value, sec = +$("scSec").value;
+  if (mode !== "none" && !await uiConfirm("Gửi lệnh thử?", mode === "modbus" ? "Ở mỗi tốc độ, app gửi lệnh <b>đọc</b> Modbus (FC 03, thanh ghi 0) tới địa chỉ 1–10. Lệnh này chỉ đọc, không điều khiển đèn." : "App sẽ gửi chữ <span class='mono'>hi</span> ở mỗi tốc độ.", "Bắt đầu")) return;
+  probeRun = "btnScan"; probeStop = false; await busyOn(); $("btnScan").textContent = "■ Dừng quét";
+  const tb = $("scTable"); tb.innerHTML = "<tr><th>Baud</th><th>Byte</th><th>Chữ đọc được</th><th>Modbus</th></tr>";
+  const results = []; const orig = $("baud").value;
+  plog(`[Quét baud] cách thử: ${mode}, ${sec}s/tốc độ`);
+  try{
+    for (const b of BAUDS){
+      if (probeStop || !link) break;
+      const tr = document.createElement("tr"); tr.className = "run"; tr.innerHTML = `<td>${b}</td><td>…</td><td></td><td></td>`; tb.appendChild(tr);
+      await reopenAt(b); await sleep(200);
+      capture = makeCapture();
+      const tEnd = Date.now() + sec * 1000;
+      if (mode === "hi") await send("hi", "\r\n");
+      if (mode === "modbus"){
+        for (let id = 1; id <= 10 && !probeStop && link; id++){
+          await sendBytes(withCrc(new Uint8Array([id,3,0,0,0,1]))); await sleep(250);
+          tr.children[1].textContent = capture.bytes().length;
+          if (findModbus(capture.bytes()).length) break;
+        }
+      }
+      while (Date.now() < tEnd && !probeStop){ await sleep(200); tr.children[1].textContent = capture.bytes().length; }
+      const u = capture.bytes(); capture = null;
+      const r = {baud: b, n: u.length, pr: printable(u), junk: junkRatio(u), mb: findModbus(u), sample: u.slice(0, 24)};
+      r.score = r.mb.length * 1000 + (r.n ? 10 + r.pr * 100 - r.junk * 50 : 0);
+      results.push(r);
+      tr.className = ""; tr.innerHTML = `<td>${b}</td><td>${r.n}${r.n && r.junk > .6 && !r.mb.length ? ' <span style="color:var(--text-2);font-weight:500">(rác)</span>' : ""}</td><td>${r.n ? Math.round(r.pr*100) + "%" : "—"}</td><td>${r.mb.length ? "✓ ID " + r.mb[0].id : "—"}</td>`;
+      plog(`  ${b}: ${r.n} byte, chữ ${Math.round(r.pr*100)}%, Modbus ${r.mb.length ? "ID " + r.mb[0].id : "không"}${r.n ? ", mẫu: " + hexStr(r.sample) : ""}`);
+    }
+  }catch(e){ toast(e.message, "err"); }
+  finally{
+    capture = null;
+    const sure = results.filter(r => r.mb.length || (r.n >= 4 && r.pr > .6)).sort((a,b) => b.score - a.score)[0];
+    const maybe = results.filter(r => r.n && r.junk <= .6).sort((a,b) => b.score - a.score)[0];
+    const best = sure;
+    if (!sure && maybe){
+      [...tb.querySelectorAll("tr")].forEach(tr => { if (tr.children[0] && tr.children[0].textContent === String(maybe.baud)) tr.className = "run"; });
+      if (link) await reopenAt(+orig).catch(()=>{});
+      toast(`Có dữ liệu chưa rõ ở ${maybe.baud} baud – xem mẫu trong kết quả`, "err");
+      plog(`[Quét baud] chưa chắc chắn, có dữ liệu ở ${maybe.baud}`);
+    } else if (best){
+      [...tb.querySelectorAll("tr")].forEach(tr => { if (tr.children[0] && tr.children[0].textContent === String(best.baud)) tr.className = "best"; });
+      if (link) await reopenAt(best.baud).catch(()=>{});
+      tb.insertAdjacentHTML("afterend", ""); toast(`Tốc độ khả nghi nhất: ${best.baud} baud – đã chuyển sang`, "ok");
+      plog(`[Quét baud] khả nghi nhất: ${best.baud}`);
+    } else {
+      if (link) await reopenAt(+orig).catch(()=>{});
+      toast("Không tốc độ nào có dữ liệu", "err"); plog("[Quét baud] không có dữ liệu ở mọi tốc độ");
+    }
+    probeRun = null; $("btnScan").textContent = "Quét tốc độ"; busyOff();
+  }
+};
+
+/* 3) Dò Modbus */
+$("btnModbus").onclick = async () => {
+  if (probeRun === "btnModbus"){ probeStop = true; return; }
+  if (busy) return;
+  const a = Math.max(1, Math.min(247, parseInt($("mbFrom").value) || 1)), z = Math.max(a, Math.min(247, parseInt($("mbTo").value) || a));
+  const fc = +$("mbFc").value, [r0, q0] = $("mbReg").value.split(/[\/,\s]+/).map(x => parseInt(x)); const reg = r0 || 0, qty = Math.max(1, Math.min(16, q0 || 1));
+  probeRun = "btnModbus"; probeStop = false; await busyOn(); $("btnModbus").textContent = "■ Dừng dò";
+  const box = $("mbList"); box.innerHTML = ""; let found = 0;
+  plog(`[Modbus] @ ${$("baud").value} baud, FC ${fc}, thanh ghi ${reg}, SL ${qty}, ID ${a}–${z}`);
+  try{
+    for (let id = a; id <= z && !probeStop && link; id++){
+      const req = withCrc(new Uint8Array([id, fc, reg >> 8, reg & 0xFF, qty >> 8, qty & 0xFF]));
+      capture = makeCapture(); await sendBytes(req); await sleep(350);
+      const u = capture.bytes(); capture = null;
+      const mb = findModbus(u).filter(m => m.id === id);
+      const line = document.createElement("div");
+      if (mb.length){
+        found++; const f = mb[0].frame, ex = f[1] & 0x80;
+        line.innerHTML = `<b style="color:#4CC382">ID ${id} trả lời</b> ${ex ? `<span class="t">(mã lỗi ${f[2]} – thiết bị có nhưng không hỗ trợ lệnh/thanh ghi này)</span>` : ""}<br><span class="n">${esc(hexStr(f))}</span>`;
+        plog(`  ID ${id}: ${ex ? "ngoại lệ " + f[2] : "OK"} ${hexStr(f)}`);
+      } else if (u.length){
+        line.innerHTML = `<span class="t">ID ${id}</span> có ${u.length} byte nhưng không phải Modbus: ${esc(hexStr(u.slice(0,24)))}`;
+        plog(`  ID ${id}: ${u.length} byte lạ ${hexStr(u.slice(0,24))}`);
+      } else { line.innerHTML = `<span class="a">ID ${id}: không trả lời</span>`; }
+      box.appendChild(line); box.scrollTop = box.scrollHeight;
+    }
+  }catch(e){ toast(e.message, "err"); }
+  finally{
+    capture = null; probeRun = null; $("btnModbus").textContent = "Dò Modbus"; busyOff();
+    plog(`[Modbus] tìm thấy ${found} thiết bị`);
+    toast(found ? `Tìm thấy ${found} thiết bị Modbus` : "Không có thiết bị Modbus trả lời", found ? "ok" : "err");
+  }
+};
+const probeText = () => `== Dò bộ điều khiển ${new Date().toLocaleString("vi-VN",{hour12:false})} ==\n` + probeLog.join("\n");
+$("btnProbeNote").onclick = () => { if (!probeLog.length) return toast("Chưa có kết quả dò"); $("ctrlNotes").value = ($("ctrlNotes").value ? $("ctrlNotes").value + "\n\n" : "") + probeText(); store.set("ctrlNotes", $("ctrlNotes").value); toast("Đã lưu vào Sổ tay", "ok"); };
+$("btnProbeCopy").onclick = async () => { if (!probeLog.length) return toast("Chưa có kết quả dò"); try{ await navigator.clipboard.writeText(probeText()); toast("Đã sao chép – dán gửi qua Zalo/chat", "ok"); }catch(e){ toast("Không sao chép được", "err"); } };
 
 /* ============ Chế độ thiết bị ============ */
 let mode = "modem";
