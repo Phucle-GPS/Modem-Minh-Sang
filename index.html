@@ -384,6 +384,7 @@ details.adv summary::-webkit-details-marker{display:none}
           <div class="field"><label>Mã hóa</label><div class="seg" id="mEncSeg"><button data-v="Bat" class="on">Bật</button><button data-v="Tat">Tắt</button></div></div>
           <div class="field" id="mPwBox"><label>Password</label><input id="mPw" class="mono" maxlength="8" placeholder="T9981" autocapitalize="off"></div>
         </div>
+        <div id="mZone"></div>
         <div class="btn-row">
           <button class="btn new" id="btnManualWrite" disabled><svg fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-write"/></svg>Ghi vào module</button>
         </div>
@@ -483,7 +484,8 @@ details.adv summary::-webkit-details-marker{display:none}
     <li>Điện thoại <b>Android</b> có <b>OTG</b>, mở bằng <b>Chrome</b>. iPhone không dùng được.</li>
     <li>Cáp <b>USB‑C → RS232 DB9</b> (chip CH340, FTDI, CP2102 hoặc PL2303), hoặc cáp USB → RS232 kèm đầu OTG USB‑C → USB‑A.</li>
     <li>Cáp loại <b>RS232</b>, không dùng loại TTL. Nếu hai đầu DB9 cùng giới tính thì thêm <b>đầu đổi giới tính</b>.</li>
-    <li>Module phải được <b>cấp nguồn</b>.</li></ul></div></details>
+    <li>Module phải được <b>cấp nguồn</b> (đèn nguồn sáng). Cáp cắm vào cổng <b>DB9 (RS‑232/485)</b> của module 4G.</li>
+    <li>Thông số cổng theo tài liệu Minh Sáng: <code>9600 · None · 8 · 1</code>. App đã đặt sẵn, không cần chỉnh.</li></ul></div></details>
 
   <details><summary><span class="n">2</span>Kết nối cáp</summary><div class="bd"><ol>
     <li>Cắm cáp vào điện thoại và cổng DB9 của module.</li>
@@ -521,12 +523,14 @@ details.adv summary::-webkit-details-marker{display:none}
     <li>Lệnh gửi vào module: <code>"TCP","hcm**.lirecon.com",1****</code></li>
     <li>Server: <code>hcm</code> + 2 số liền sau số đầu của port.</li>
     <li>Password: <code>T</code> + 4 số cuối port.</li>
-    <li>Ví dụ: port <b>19981</b> → <code>hcm99.lirecon.com</code>, <code>T9981</code>.</li></ul></div></details>
+    <li>Ví dụ: port <b>19981</b> → <code>hcm99.lirecon.com</code>, <code>T9981</code>.</li>
+    <li>Mã vùng có trên máy chủ: <code>00 01 02 35 52 77 97 98 99</code>. App cảnh báo khi port có mã vùng ngoài danh sách này, hoặc khi server không khớp mã vùng.</li>
+    <li>Nguồn: tài liệu Minh Sáng, Trang 1–4 (cấu hình port module) và Trang 5–6 (phần mềm máy chủ).</li></ul></div></details>
 
   <details><summary><span class="n">9</span>Xử lý lỗi</summary><div class="bd"><ul>
     <li><b>Không thấy cáp:</b> kiểm tra OTG đã bật chưa, cắm lại, hoặc thử cáp khác.</li>
     <li><b>Không phản hồi:</b> kiểm tra nguồn module, loại cáp RS232, đầu đổi giới tính DB9.</li>
-    <li><b>Dừng giữa chừng:</b> module chỉ chờ một thời gian ngắn. Ngắt rồi kết nối lại, sau đó nạp lại.</li>
+    <li><b>Dừng giữa chừng:</b> theo tài liệu Minh Sáng, module không chờ lâu giữa các bước. Khi đó app <b>tự mở lại cổng và làm lại từ đầu</b> một lần. Nếu vẫn lỗi thì kiểm tra nguồn, cáp, rồi nạp lại.</li>
     <li><b>Có dấu ✗:</b> bấm nạp lại.</li>
     <li><b>Đã nạp đúng mà không Connected:</b> kiểm tra SIM, sóng 4G, và xem có module khác trùng port không.</li>
     <li>Tab <b>Terminal</b> hiện toàn bộ nội dung trao đổi với module. Bấm <b>Sao chép log</b> để gửi người hỗ trợ.</li></ul></div></details>
@@ -879,8 +883,39 @@ function hostFor(port, host){
   return host;
 }
 const cfgLine = c => `"${c.proto}","${c.host}",${c.port}`;
+// Mã vùng có trên máy chủ (theo các file 00…99.exe của Minh Sáng)
+const ZONES = ["00","01","02","35","52","77","97","98","99"];
+function zoneNote(c){
+  const p = String(c.port);
+  if (!/^1\d{4}$/.test(p)) return "";
+  const z = p.slice(1,3), hm = /^hcm(\d\d)\./i.exec(c.host || "");
+  let h = "";
+  if (!ZONES.includes(z)) h += hint("warn", `Mã vùng <b class="mono">${z}</b> của port ${p} chưa có trong danh sách máy chủ (${ZONES.join(", ")}). Kiểm tra lại port.`);
+  if (hm && hm[1] !== z) h += hint("warn", `Server <span class="mono">hcm${hm[1]}</span> không khớp mã vùng <b class="mono">${z}</b> của port ${p}. Theo quy ước phải là <span class="mono">hcm${z}.lirecon.com</span>.`);
+  return h;
+}
 const encTxt = v => v === "Bat" ? "Bật" : v === "Tat" ? "Tắt" : v;
 
+// Theo HDSD Minh Sáng: nếu module không hiện bước tiếp theo (chờ quá lâu) → mở lại cổng và làm lại từ đầu
+async function reopenPort(){
+  if (!link) throw new Error("Chưa kết nối cáp");
+  const baud = +$("baud").value, old = link;
+  const fresh = old instanceof UsbSerial ? new UsbSerial(old.dev) : new NativeSerial(old.port);
+  await old.close(); await sleep(400);
+  link = fresh; await link.open(baud);
+  link.readLoop(onRx, e => { sys("Mất kết nối: " + e.message); disconnect(); toast("Mất kết nối cáp", "err"); });
+  sys("Đã mở lại cổng " + link.type + " " + baud);
+}
+async function writeConfigRetry(cfg, stepsEl){
+  try{ return await writeConfig(cfg, stepsEl); }
+  catch(e){
+    if (!link) throw e;
+    sys("Module không phản hồi ở bước \"" + e.message + "\" → mở lại cổng và làm lại từ đầu (theo HDSD Minh Sáng)");
+    toast("Module chờ quá lâu – đang mở lại cổng và làm lại", "err");
+    await reopenPort(); await sleep(600);
+    return await writeConfig(cfg, stepsEl);
+  }
+}
 function stepList(el, names){ el.innerHTML = ""; return names.map(n => { const li = document.createElement("li"); li.textContent = n; el.appendChild(li); return li; }); }
 async function writeConfig(cfg, stepsEl){
   const encOn = cfg.enc === "Bat";
@@ -1028,6 +1063,7 @@ function updateDiff(){
   let h = same
     ? hint("info", `Nạp <b>giống hệt</b> module cũ, dùng khi thay module hỏng trong cùng tủ. Tháo/tắt module cũ: không để 2 module cùng port <b class="mono">${esc(t.port)}</b> chạy cùng lúc.`)
     : hint("warn", `Nạp cấu hình <b>khác</b> module cũ: port <b class="mono">${esc(t.port)}</b>, server <span class="mono">${esc(t.host)}</span>. Port phải đúng port đã đăng ký cho tủ trên máy chủ.`);
+  h += zoneNote(t);
   if (other) h += `<div class="hint bad">${icon("i-warn")}<div>Port <b class="mono">${esc(t.port)}</b> đang được <b>${esc(other.name)}</b> dùng. Hai tủ trùng port sẽ không kết nối được.</div></div>`;
   box.innerHTML = h;
 }
@@ -1078,7 +1114,7 @@ $("btnWriteNew").onclick = async () => {
       if (!again){ $("cmpBox").innerHTML = resultBox(true, "Không cần nạp", "Module này đã đúng cấu hình."); return; }
       await busyOn();
     }
-    const after = await writeConfig(target, $("steps"));
+    const after = await writeConfigRetry(target, $("steps"));
     const ok = sameCfg(after, target);
     $("cmpBox").innerHTML = cmpTable(target, after || {}, "Cần nạp", "Module mới") +
       (ok ? resultBox(true, "Nạp thành công" + (edited ? " · " + esc(tName) : ""), "Lắp module vào tủ, chờ đèn Online chớp nhanh và kiểm tra <b>Connected</b> trên máy chủ.")
@@ -1093,7 +1129,7 @@ $("btnWriteNew").onclick = async () => {
     $("cmpBox").scrollIntoView({behavior:"smooth", block:"nearest"});
   }catch(e){
     sys("Dừng ở bước: " + e.message);
-    $("cmpBox").innerHTML = resultBox(false, "Module không phản hồi", "Dừng ở bước: <b>" + esc(e.message) + "</b>.<br>Bấm Ngắt → Kết nối lại rồi nạp lại (module chỉ chờ trong thời gian ngắn).");
+    $("cmpBox").innerHTML = resultBox(false, "Module không phản hồi", "Dừng ở bước: <b>" + esc(e.message) + "</b> (app đã tự mở lại cổng và thử lại 1 lần).<br>Kiểm tra nguồn module, cáp RS232, rồi bấm nạp lại.");
   }finally{ if (busy) busyOff(); }
 };
 
@@ -1104,7 +1140,9 @@ $("mPort").addEventListener("input", () => {
   const p = $("mPort").value.trim();
   if (!hostTouched && /^\d{5}$/.test(p)) $("mHost").value = hostFor(p, "");
   $("mPw").placeholder = /^\d{4,5}$/.test(p) ? pwFor(p) : "T9981";
+  $("mZone").innerHTML = zoneNote({port:p, host:$("mHost").value.trim()});
 });
+$("mHost").addEventListener("input", () => $("mZone").innerHTML = zoneNote({port:$("mPort").value.trim(), host:$("mHost").value.trim()}));
 segBind("mProtoSeg");
 segBind("mEncSeg", () => $("mPwBox").style.visibility = segVal("mEncSeg") === "Bat" ? "visible" : "hidden");
 const manualCfg = () => validCfg({proto:segVal("mProtoSeg"), host:$("mHost").value.trim(), port:$("mPort").value.trim(), enc:segVal("mEncSeg"), pw:$("mPw").value.trim()});
@@ -1114,7 +1152,7 @@ $("btnManualWrite").onclick = async () => {
   if (!await uiConfirm("Ghi vào module?", cfgCard(c, "Port " + c.port), "Ghi", "new")) return;
   await busyOn(); $("mCmp").innerHTML = "";
   try{
-    const after = await writeConfig(c, $("mSteps"));
+    const after = await writeConfigRetry(c, $("mSteps"));
     const ok = sameCfg(after, c);
     $("mCmp").innerHTML = cmpTable(c, after || {}, "Cần ghi", "Đọc lại") + (ok ? resultBox(true, "Ghi thành công", "") : resultBox(false, "Chưa khớp", "Ghi lại hoặc xem Terminal."));
     if (ok) toast("Ghi thành công", "ok");
@@ -1145,7 +1183,8 @@ const BUILTIN_SRC = [
    runs:"Máy tính chủ ở trung tâm (Windows) – chép vào thư mục Startup",
    files:"TCP_IP_Connect.exe (v4.05) · 00, 01, 02, 35, 52, 77, 97, 98, 99.exe · 40000…40028, 40350, 40352, 40520…40526, 40770…40774, 40998.exe · 1. Huong dan su dung phan mem.pdf",
    guess:"modem",
-   evidence:["Tiêu đề tài liệu: “Hướng dẫn cài đặt phần mềm trên máy chủ để <b>modem 4G</b> kết nối với máy chủ”.",
+   evidence:["Tài liệu <b>Trang 5–6</b>: “Hướng dẫn cài đặt phần mềm trên máy chủ để <b>modem 4G</b> kết nối với máy chủ”, nối tiếp tài liệu cấu hình port (Trang 1–4).",
+     "Màn hình TCP_IP_Connect chia port theo <b>mã vùng</b> (Select list 99 → port 19901–20000). Các file 00, 01, 02, 35, 52, 77, 97, 98, 99.exe ứng với từng mã vùng.",
      "Cách kiểm tra trong tài liệu: đèn <b>Online của modem 4G</b> chớp nhanh và TCP_IP_Connect báo <b>Connected</b> ở port của tủ.",
      "Các file 4xxxx.exe chuyển dữ liệu giữa hai cổng mạng (vd 40000 ↔ 42000): đây là cầu nối từ modem về phần mềm ở trung tâm, không nạp vào thiết bị nào.",
      "Không chạy trên điện thoại; giữ nguyên trên máy chủ."]},
@@ -1154,17 +1193,18 @@ const BUILTIN_SRC = [
    runs:"Máy tính qua cổng COM. App này đã thay thế: tab Sao chép / Cài tay",
    files:"AccessPort.exe · Apsm.sys · Apsm_x64.sys · AccessPort.ini · Huong dan cau hinh port module.pdf",
    guess:"modem",
-   evidence:["Tên thư mục: “cấu hình port <b>module kntt</b>” (module kết nối trung tâm).",
-     "Tài liệu hướng dẫn cài server, port, mã hóa, password cho <b>module 4G</b>: chính là menu hi → 1/2/3 mà app đang dùng.",
+   evidence:["Tài liệu <b>Trang 1–4</b>: “Hướng dẫn cấu hình port <b>module kết nối trung tâm</b>”: cấp nguồn module 4G, cắm cáp vào cổng DB9 (RS‑232/485).",
+     "Cổng COM: 9600 baud, Parity None, 8 data bit, 1 stop bit, cáp USB TO COM RS232 chip <b>CH340</b>. File AccessPort.ini trên máy cũng đặt 9600‑N‑8‑1.",
+     "Menu module: hi → 1 Đọc thông số / 2 Cài đặt thông số / 3 Khởi động lại. Câu chữ của module trong tài liệu khớp với các bước app tự gửi.",
      "AccessPort chỉ là phần mềm gõ lệnh cổng COM, không chứa firmware."]},
   {id:"ctrlsw", builtin:true, name:"Phần mềm / tài liệu bộ điều khiển trung tâm",
    pack:"Chưa có trong 2 file đã gửi",
    runs:"—",
    files:"(chưa có)",
    guess:"ctrl", placeholder:true,
-   evidence:["Trong 2 file nén không có phần mềm nào dành cho bộ điều khiển.",
-     "Tài liệu modem bắt đầu từ <b>Trang 5</b>, nên trang 1–4 của bộ tài liệu Minh Sáng (có thể là phần bộ điều khiển) chưa được gửi.",
-     "Khi có file, bấm vào đây để ghi tên file và gán đúng thiết bị."]}
+   evidence:["Trong 2 file nén và thư mục “2. Phan mem cau hinh port module kntt” không có phần mềm hay tài liệu nào của bộ điều khiển.",
+     "Bộ tài liệu Minh Sáng đã đủ <b>Trang 1–6</b>, và cả 6 trang đều nói về <b>module 4G kết nối trung tâm</b>.",
+     "Cần xin Minh Sáng phần mềm hoặc tài liệu riêng của bộ điều khiển. Khi có file, bấm vào đây để ghi tên file và gán đúng thiết bị."]}
 ];
 const srcStore = {
   load(){ const st = store.get("srcState", {}); const custom = store.get("srcCustom", []);
@@ -1198,7 +1238,7 @@ function renderSources(){
   $("ctrlSrcList").innerHTML = forCtrl.length ? forCtrl.map(srcCardHtml).join("") : `<div class="empty" style="padding:14px">Chưa gán nguồn nào cho bộ điều khiển</div>`;
   $("ctrlState").innerHTML = real.length
     ? hint("info", `Đã gán <b>${real.length}</b> nguồn cho bộ điều khiển. Gửi các file này cho mình để viết phần đọc/nạp riêng cho bộ điều khiển.`)
-    : hint("warn", `Chưa có phần mềm hoặc tài liệu của bộ điều khiển. Cả 2 file đã gửi đều dành cho <b>Modem KNTT</b>. Khi có file, bấm <b>+ Thêm nguồn</b> để ghi lại.`);
+    : hint("warn", `Chưa có phần mềm hoặc tài liệu của bộ điều khiển. Bộ tài liệu Minh Sáng đã nhận (Trang 1–6) chỉ dành cho <b>Modem KNTT</b>. Khi có file, bấm <b>+ Thêm nguồn</b> để ghi lại.`);
 }
 async function openSource(id){
   const s = srcStore.load().find(x => x.id === id); if (!s) return;
